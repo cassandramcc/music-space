@@ -31,7 +31,7 @@ public class PaintCreator : MonoBehaviour
         newestVertexDrawn = vertices.Count;
     }
 
-    void drawVertices(){
+    void DrawVertices(){
         Vector3 mousePos = Input.mousePosition;
         Vector3 point = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10));
         DebugSpheres(point);
@@ -44,8 +44,8 @@ public class PaintCreator : MonoBehaviour
         vertices.AddRange(newVertices);
     }
 
-    void drawTriangles(){
-        for (int i = 0; i < (int)(vertices.Count-8)/4; i++){
+    void DrawTriangles(){
+        for (int i = 0; i <= (int)(vertices.Count-8)/4; i++){
             int vertexIndex = i*4;
             int[] newTriangles = {
                 //left
@@ -63,11 +63,22 @@ public class PaintCreator : MonoBehaviour
             };
             triangles.AddRange(newTriangles);
         }
+        
+        UpdateMesh();
+    }
+
+    void DrawFrontAndBackFaces(){
         //front face
+        Debug.Log("Front face");
+        Debug.Log(newestVertexDrawn);
+        Debug.Log(vertices[newestVertexDrawn]);
         triangles.AddRange(new int[]{newestVertexDrawn,newestVertexDrawn+3,newestVertexDrawn+1,newestVertexDrawn+3,newestVertexDrawn+2,newestVertexDrawn+1});
         //end face
         int endIndex = vertices.Count - 4;
         triangles.AddRange(new int[]{endIndex,endIndex+1,endIndex+2,endIndex,endIndex+2,endIndex+3});
+        Debug.Log("Back face");
+        Debug.Log(endIndex);
+        Debug.Log(vertices[endIndex]);
         UpdateMesh();
     }
     void Update() {
@@ -77,16 +88,11 @@ public class PaintCreator : MonoBehaviour
         Debug.DrawRay(cam.transform.position,cam.transform.forward*10,Color.green);
 
         if (Input.GetMouseButton(1)){
-            drawVertices();
-            Debug.Log("Vertices");
-            Debug.Log(vertices.Count);
-            Debug.Log(newestVertexDrawn);
+            DrawVertices();
+            DrawTriangles();
         }
         else if (Input.GetMouseButtonUp(1)){
-            drawTriangles();
-            Debug.Log("Triangles");
-            Debug.Log(vertices.Count);
-            Debug.Log(newestVertexDrawn);
+            DrawFrontAndBackFaces();
         }
     }
     void DebugSpheres(Vector3 point){
