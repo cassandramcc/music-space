@@ -8,6 +8,10 @@ public class PaintCreator : MonoBehaviour
     Mesh mesh;
     List<Vector3> vertices;
     List<int> triangles;
+
+    public Camera cam;
+
+    public GameObject mouseCursorUI;
     void Start()
     {
         mesh = new Mesh();
@@ -54,6 +58,47 @@ public class PaintCreator : MonoBehaviour
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
+    }
+
+    void Update() {
+        Vector3 mousePos = Input.mousePosition;
+        Vector3 point = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10));
+        mouseCursorUI.transform.position = point;
+        Debug.Log(point);
+        if (Input.GetMouseButtonDown(1)){
+            DebugSpheres(point);
+            Vector3[] newVertices = {
+                new Vector3(point.x,point.y,point.z),
+                new Vector3(point.x,point.y+1,point.z),
+                new Vector3(point.x+1,point.y+1,point.z),
+                new Vector3(point.x+1,point.y,point.z)
+            };
+            vertices.AddRange(newVertices);
+
+            int recentVertices = vertices.Count-4;
+            int[] newTriangles = {
+                
+                recentVertices,recentVertices+1,recentVertices+2,
+                recentVertices,recentVertices+2,recentVertices+3
+            };
+            triangles.AddRange(newTriangles);
+            UpdateMesh();
+        }
+
+        void DebugSpheres(Vector3 point){
+            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            cube.transform.position = new Vector3(point.x,point.y,point.z);
+            cube.transform.localScale = new Vector3(0.2f,0.2f,0.2f);
+            cube = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            cube.transform.position = new Vector3(point.x,point.y+1,point.z);
+            cube.transform.localScale = new Vector3(0.2f,0.2f,0.2f);
+            cube = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            cube.transform.position = new Vector3(point.x+1,point.y+1,point.z);
+            cube.transform.localScale = new Vector3(0.2f,0.2f,0.2f);
+            cube = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            cube.transform.position = new Vector3(point.x+1,point.y,point.z);
+            cube.transform.localScale = new Vector3(0.2f,0.2f,0.2f);
+        }
     }
 
 }
