@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System;
 
 [RequireComponent(typeof(MeshFilter))]
 public class PaintCreator : MonoBehaviour
 {
+    public CharacterController controller;
     Mesh mesh;
     List<Vector3> vertices;
     int newestVertexDrawn = 0;
@@ -37,8 +39,8 @@ public class PaintCreator : MonoBehaviour
         Vector3[] newVertices = {
             new Vector3(point.x,point.y,point.z),
             new Vector3(point.x,point.y+1,point.z),
-            new Vector3(point.x,point.y+1,point.z+1),
-            new Vector3(point.x,point.y,point.z+1)
+            new Vector3(point.x+Math.Sign(controller.velocity.z)*1,point.y+1,point.z+Math.Sign(controller.velocity.x)*1),
+            new Vector3(point.x+Math.Sign(controller.velocity.z)*1,point.y,point.z+Math.Sign(controller.velocity.x)*1)
         };
         vertices.AddRange(newVertices);
         newestVertexDrawn = vertices.Count-8;
@@ -120,7 +122,7 @@ public class PaintCreator : MonoBehaviour
         UpdateMesh();
     }
     void Update() {
-        Debug.Log(cam.transform.forward);
+        Debug.Log(controller.velocity);
         Vector3 mousePos = Input.mousePosition;
         Vector3 point = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10));
         mouseCursorUI.transform.position = point;
