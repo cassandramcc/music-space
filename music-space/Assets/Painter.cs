@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class Painter : MonoBehaviour
 {
@@ -31,6 +32,8 @@ public class Painter : MonoBehaviour
 
     public Camera cam;
 
+    Vector3 lastPoint;
+
     public GameObject mouseCursorUI;
     // Start is called before the first frame update
     void Start()
@@ -53,11 +56,19 @@ public class Painter : MonoBehaviour
     void DrawPoint(){
         Vector3 mousePos = Input.mousePosition;
         Vector3 point = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10));
+        Debug.Log(point);
+        Debug.Log(lastPoint);
+        Debug.Log((lastPoint - point).magnitude);
+        //To stop too many vertices spawning in the same place
+        if ((lastPoint - point).magnitude > 0.01f){
+            centralVertices.Add(new Vertex(point));
+            DebugSpheres(point);
+            numRecentVertices += 1;
+        }
+        
         mouseCursorUI.transform.position = point;
         Debug.DrawRay(cam.transform.position,cam.transform.forward*10,Color.green);
-        centralVertices.Add(new Vertex(point));
-        DebugSpheres(point);
-        numRecentVertices += 1;
+        
     }
 
     void CalculateVertexDirection(){
@@ -100,17 +111,17 @@ public class Painter : MonoBehaviour
             int startVertex = vertices.Count - 8;
             //If you want different shapes, will need to make this number changeable.
             triangles.AddRange(new int[]{
-                startVertex, startVertex+3,startVertex+4,
-                startVertex,startVertex+7,startVertex+4,
+                startVertex, startVertex+1,startVertex+5,
+                startVertex,startVertex+4,startVertex+5,
 
-                startVertex+2,startVertex+7,startVertex+3,
-                startVertex+2,startVertex+6,startVertex+7,
+                startVertex,startVertex+3,startVertex+7,
+                startVertex,startVertex+3,startVertex+4,
+
+                startVertex+3,startVertex+6,startVertex+2,
+                startVertex+3,startVertex+7,startVertex+6,
 
                 startVertex+1,startVertex+5,startVertex+2,
-                startVertex+5,startVertex+6,startVertex+2,
-
-                startVertex+1,startVertex+4,startVertex+5,
-                startVertex+1,startVertex,startVertex+4
+                startVertex+5,startVertex+6,startVertex+2
             });
             //draw triangles between last vertex and last last vertex.
             UpdateMesh();
@@ -122,6 +133,7 @@ public class Painter : MonoBehaviour
         Vector3 mousePos = Input.mousePosition;
         Vector3 point = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10));
         mouseCursorUI.transform.position = point;
+        
         if (Input.GetMouseButton(0)){
             DrawPoint();
             CalculateVertexDirection();
@@ -140,12 +152,18 @@ public class Painter : MonoBehaviour
         }
         
         
-        
+        lastPoint = point;
     }
 
     void DebugSpheres(Vector3 point){
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         cube.transform.position = new Vector3(point.x,point.y,point.z);
         cube.transform.localScale = new Vector3(0.2f,0.2f,0.2f);
+    }
+
+    void OnDrawGizmos() {
+        for (int i = 0; i < vertices.Count; i++){
+            Handles.Label(vertices[i],i.ToString());
+        }
     }
 }

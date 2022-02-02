@@ -1027,7 +1027,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1683390121}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 640a6a6c1a10c6a458077f877a167c40, type: 3}
   m_Name: 
@@ -1110,8 +1110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 709c4bbac2fd2b64b965cf7ff80097f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
-  mouseCursorUI: {fileID: 0}
+  cam: {fileID: 86107804}
+  mouseCursorUI: {fileID: 878755844}
 --- !u!1 &1725982592
 GameObject:
   m_ObjectHideFlags: 0
