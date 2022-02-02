@@ -26,6 +26,9 @@ public class Painter : MonoBehaviour
     int newestVertexDrawn = 0;
     List<int> triangles;
 
+    bool drawTriangles;
+    int numRecentVertices;
+
     public Camera cam;
 
     public GameObject mouseCursorUI;
@@ -54,6 +57,7 @@ public class Painter : MonoBehaviour
         Debug.DrawRay(cam.transform.position,cam.transform.forward*10,Color.green);
         centralVertices.Add(new Vertex(point));
         DebugSpheres(point);
+        numRecentVertices += 1;
     }
 
     void CalculateVertexDirection(){
@@ -88,8 +92,28 @@ public class Painter : MonoBehaviour
     }
 
     void DrawTriangles(){
-        if (centralVertices.Count >=3){
+        if (numRecentVertices >=3){
+            Vertex start = centralVertices[centralVertices.Count - 3];
+            Vertex end = centralVertices[centralVertices.Count - 2];
+            vertices.AddRange(start.edgeVertices);
+            vertices.AddRange(end.edgeVertices);
+            int startVertex = vertices.Count - 8;
+            //If you want different shapes, will need to make this number changeable.
+            triangles.AddRange(new int[]{
+                startVertex, startVertex+3,startVertex+4,
+                startVertex,startVertex+7,startVertex+4,
+
+                startVertex+2,startVertex+7,startVertex+3,
+                startVertex+2,startVertex+6,startVertex+7,
+
+                startVertex+1,startVertex+5,startVertex+2,
+                startVertex+5,startVertex+6,startVertex+2,
+
+                startVertex+1,startVertex+4,startVertex+5,
+                startVertex+1,startVertex,startVertex+4
+            });
             //draw triangles between last vertex and last last vertex.
+            UpdateMesh();
         }
     }
     // Update is called once per frame
@@ -101,7 +125,14 @@ public class Painter : MonoBehaviour
         if (Input.GetMouseButton(0)){
             DrawPoint();
             CalculateVertexDirection();
+            DrawTriangles();
         }
+
+        if (Input.GetMouseButtonUp(0)){
+            drawTriangles = false;
+            numRecentVertices = 0;
+        }
+
         foreach (Vertex v in centralVertices){
             Debug.DrawRay(v.pos,v.direction*0.4f,Color.red);
             Debug.DrawRay(v.pos,v.orthoDirection*0.5f,Color.cyan);
@@ -109,7 +140,7 @@ public class Painter : MonoBehaviour
         }
         
         
-        DrawTriangles();
+        
     }
 
     void DebugSpheres(Vector3 point){
