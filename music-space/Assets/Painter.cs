@@ -81,16 +81,16 @@ public class Painter : MonoBehaviour
             direction = direction/direction.magnitude; //normalised direction
             Vertex lastVertex = centralVertices[centralVertices.Count - 2];
             lastVertex.direction = direction;
-            Debug.DrawRay(lastVertex.pos,lastVertex.direction*2f,Color.red);
+            //Debug.DrawRay(lastVertex.pos,lastVertex.direction*2f,Color.red);
             //this is the direction between first vertex and the next vertex
             //the first vertex's points need to be in the perpedincular direction
             Vector3 perpendicular = new Vector3();
             Vector3.OrthoNormalize(ref direction,ref perpendicular);
             lastVertex.orthoDirection = perpendicular;
-            Debug.DrawRay(lastVertex.pos,perpendicular*5,Color.cyan);
+            //Debug.DrawRay(lastVertex.pos,perpendicular*5,Color.cyan);
             Vector3 rotation = perpendicular * Mathf.Cos(Mathf.PI/2) + (Vector3.Cross(direction,perpendicular))*Mathf.Sin(Mathf.PI/2) + direction*(Vector3.Dot(perpendicular,direction))*(1-Mathf.Cos(Mathf.PI/2));
             lastVertex.rotated = rotation;
-            Debug.DrawRay(lastVertex.pos,rotation*2f,Color.magenta);
+            //Debug.DrawRay(lastVertex.pos,rotation*2f,Color.magenta);
             
             //The perpendicular direction is the negative reciprical gradient, so need to calculate gradient of direction
             // then turn perpendicular gradient into a vector direction.
@@ -114,19 +114,37 @@ public class Painter : MonoBehaviour
             vertices.AddRange(end.edgeVertices);
             int startVertex = vertices.Count - 8;
             //If you want different shapes, will need to make this number changeable.
-            triangles.AddRange(new int[]{
-                startVertex, startVertex+1,startVertex+5,
-                startVertex,startVertex+4,startVertex+5,
+            if (start.pos.x > end.pos.x){
+                triangles.AddRange(new int[]{
+                    startVertex+5, startVertex,startVertex+1,
+                    startVertex,startVertex+5,startVertex+4,
 
-                startVertex,startVertex+3,startVertex+7,
-                startVertex,startVertex+3,startVertex+4,
+                    startVertex+3,startVertex,startVertex+7,
+                    startVertex+7,startVertex,startVertex+4,
 
-                startVertex+3,startVertex+6,startVertex+2,
-                startVertex+3,startVertex+7,startVertex+6,
+                    startVertex+2,startVertex+3,startVertex+6,
+                    startVertex+6,startVertex+3,startVertex+7,
 
-                startVertex+1,startVertex+5,startVertex+2,
-                startVertex+5,startVertex+6,startVertex+2
-            });
+                    startVertex+5,startVertex+1,startVertex+2,
+                    startVertex+6,startVertex+5,startVertex+2
+                }); 
+            }
+            else{
+                triangles.AddRange(new int[]{
+                    startVertex, startVertex+1,startVertex+5,
+                    startVertex,startVertex+5,startVertex+4,
+
+                    startVertex,startVertex+7,startVertex+3,
+                    startVertex,startVertex+4,startVertex+7,
+
+                    startVertex+3,startVertex+6,startVertex+2,
+                    startVertex+3,startVertex+7,startVertex+6,
+
+                    startVertex+1,startVertex+2,startVertex+5,
+                    startVertex+5,startVertex+2,startVertex+6
+                });
+            }
+            
             //draw triangles between last vertex and last last vertex.
             UpdateMesh();
         }
@@ -162,9 +180,9 @@ public class Painter : MonoBehaviour
         }
 
         foreach (Vertex v in centralVertices){
-            Debug.DrawRay(v.pos,v.direction*0.4f,Color.red);
-            Debug.DrawRay(v.pos,v.orthoDirection*0.5f,Color.cyan);
-            Debug.DrawRay(v.pos,v.rotated*0.5f,Color.magenta);
+            //Debug.DrawRay(v.pos,v.direction*0.4f,Color.red);
+            //Debug.DrawRay(v.pos,v.orthoDirection*0.5f,Color.cyan);
+            //Debug.DrawRay(v.pos,v.rotated*0.5f,Color.magenta);
         }
         
         
@@ -177,9 +195,9 @@ public class Painter : MonoBehaviour
         cube.transform.localScale = new Vector3(0.02f,0.02f,0.02f);
     }
 
-    /*void OnDrawGizmos() {
-        for (int i = 0; i < vertices.Count; i++){
+    void OnDrawGizmos() {
+        for (int i = 0; i < 9; i++){
             Handles.Label(vertices[i],i.ToString());
         }
-    }*/
+    }
 }
