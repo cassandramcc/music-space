@@ -8,12 +8,14 @@ public class ChuckTeest : MonoBehaviour
     void Start()
     {
         GetComponent<ChuckSubInstance>().RunCode(@"
-            SinOsc foo => dac;
-            while( true )
-            {
-                Math.random2f( 300, 1000 ) => foo.freq;
-                100::ms => now;
-            }
+            
+            // make our patch
+            SinOsc s => dac;
+            
+            261.63 => s.freq;
+            1000::ms => now;
+            392 => s.freq;
+            1000::ms => now;
 	    ");
     }
 
