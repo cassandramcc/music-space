@@ -38,6 +38,9 @@ public class Painter : MonoBehaviour
     public GameObject mouseCursorUI;
 
     public GameObject controller;
+    public GameObject rController;
+
+    public GameObject chuckControls;
     // Start is called before the first frame update
     void Start()
     {
@@ -179,14 +182,30 @@ public class Painter : MonoBehaviour
             numRecentVertices = 0;
         }
 
+        if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
+            Debug.Log("R pressed");
+            
+            List<float> freqBuffer = new List<float>();
+            foreach(Vertex v in centralVertices){   
+                freqBuffer.Add(VertexToFreq(v));
+            }
+            chuckControls.GetComponent<ChuckTest>().ReceiveFreqBuffer(freqBuffer);
+            StartCoroutine(chuckControls.GetComponent<ChuckTest>().playNotes());
+        }
+
         foreach (Vertex v in centralVertices){
             //Debug.DrawRay(v.pos,v.direction*0.4f,Color.red);
             //Debug.DrawRay(v.pos,v.orthoDirection*0.5f,Color.cyan);
             //Debug.DrawRay(v.pos,v.rotated*0.5f,Color.magenta);
         }
         
-        
         lastPoint = point;
+    }
+
+    float VertexToFreq(Vertex v){
+        //output = output_start + ((output_end - output_start) / (input_end - input_start)) * (input - input_start)
+        float output = 261.63f + ((466.16f - 261.63f)/1f - 0f) * (v.pos.y - 0f);
+        return output;
     }
 
     void DebugSpheres(Vector3 point){
