@@ -41,8 +41,7 @@ public class Painter : MonoBehaviour
     public GameObject rController;
 
     public GameObject chuckControls;
-    // Start is called before the first frame update
-    void Start()
+        void Start()
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
@@ -60,22 +59,14 @@ public class Painter : MonoBehaviour
     }
 
     void DrawPoint(){
-        //Vector3 mousePos = Input.mousePosition;
-        //Vector3 point = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10));
         Vector3 point = controller.transform.position;
-        //Debug.Log(point);
-        //Debug.Log(lastPoint);
-        //Debug.Log((lastPoint - point).magnitude);
         //To stop too many vertices spawning in the same place
         if ((lastPoint - point).magnitude > 0.01f){
             centralVertices.Add(new Vertex(point));
             DebugSpheres(point);
             numRecentVertices += 1;
         }
-        
         mouseCursorUI.transform.position = point;
-        Debug.DrawRay(cam.transform.position,cam.transform.forward*10,Color.green);
-        
     }
 
     void CalculateVertexDirection(){
@@ -84,28 +75,22 @@ public class Painter : MonoBehaviour
             direction = direction/direction.magnitude; //normalised direction
             Vertex lastVertex = centralVertices[centralVertices.Count - 2];
             lastVertex.direction = direction;
-            //Debug.DrawRay(lastVertex.pos,lastVertex.direction*2f,Color.red);
             //this is the direction between first vertex and the next vertex
             //the first vertex's points need to be in the perpedincular direction
             Vector3 perpendicular = new Vector3();
             Vector3.OrthoNormalize(ref direction,ref perpendicular);
             lastVertex.orthoDirection = perpendicular;
-            //Debug.DrawRay(lastVertex.pos,perpendicular*5,Color.cyan);
             Vector3 rotation = perpendicular * Mathf.Cos(Mathf.PI/2) + (Vector3.Cross(direction,perpendicular))*Mathf.Sin(Mathf.PI/2) + direction*(Vector3.Dot(perpendicular,direction))*(1-Mathf.Cos(Mathf.PI/2));
+            //the point 180 degrees away from the perp vector
             lastVertex.rotated = rotation;
-            //Debug.DrawRay(lastVertex.pos,rotation*2f,Color.magenta);
             
-            //The perpendicular direction is the negative reciprical gradient, so need to calculate gradient of direction
-            // then turn perpendicular gradient into a vector direction.
-            //Create points on plane defined by this perpendicular gradient
+            //Create points on plane defined by this perpendicular by rotating the perp vector around the direction as the axis
             for (int i = 0; i <= 270; i+=90){
                 Vector3 rot = perpendicular * Mathf.Cos(i * Mathf.Deg2Rad) + (Vector3.Cross(direction,perpendicular))*Mathf.Sin(i * Mathf.Deg2Rad) + direction*(Vector3.Dot(perpendicular,direction))*(1-Mathf.Cos(i * Mathf.Deg2Rad));
                 Vector3 newPoint = lastVertex.pos - rot;
                 Vector3 shrinkNewPoint = Vector3.MoveTowards(newPoint,lastVertex.pos,0.9f);
                 lastVertex.edgeVertices.Add(shrinkNewPoint);
-                //DebugSpheres(shrinkNewPoint);
             }
-            //Before doing triangles, add debug spheres to test points spawn correctly.
         }
     }
 
@@ -152,33 +137,19 @@ public class Painter : MonoBehaviour
             UpdateMesh();
         }
     }
-    // Update is called once per frame
+
     void Update()
     {
-        //Vector3 mousePos = Input.mousePosition;
-        //Vector3 point = cam.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 10));
-        //mouseCursorUI.transform.position = point;
+
         Vector3 point = controller.transform.position;
-        
-        /*if (Input.GetMouseButton(0)){
+
+        if (controller.GetComponent<ActionBasedController>().activateAction.action.ReadValue<float>() > 0.8){
             DrawPoint();
             CalculateVertexDirection();
             DrawTriangles();
         }
 
-        if (Input.GetMouseButtonUp(0)){
-            drawTriangles = false;
-            numRecentVertices = 0;
-        }*/
-
-        if (controller.GetComponent<ActionBasedController>().activateAction.action.ReadValue<float>() > 0.8)
-        {
-            DrawPoint();
-            CalculateVertexDirection();
-            DrawTriangles();
-        }
-        else
-        {
+        else{
             numRecentVertices = 0;
         }
 
@@ -189,14 +160,8 @@ public class Painter : MonoBehaviour
             foreach(Vertex v in centralVertices){   
                 freqBuffer.Add(VertexToFreq(v));
             }
-            chuckControls.GetComponent<ChuckTest>().ReceiveFreqBuffer(freqBuffer);
-            StartCoroutine(chuckControls.GetComponent<ChuckTest>().playNotes());
-        }
-
-        foreach (Vertex v in centralVertices){
-            //Debug.DrawRay(v.pos,v.direction*0.4f,Color.red);
-            //Debug.DrawRay(v.pos,v.orthoDirection*0.5f,Color.cyan);
-            //Debug.DrawRay(v.pos,v.rotated*0.5f,Color.magenta);
+            chuckControls.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
+            StartCoroutine(chuckControls.GetComponent<ChuckSynth>().playNotes());
         }
         
         lastPoint = point;
@@ -212,11 +177,5 @@ public class Painter : MonoBehaviour
         GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         cube.transform.position = new Vector3(point.x,point.y,point.z);
         cube.transform.localScale = new Vector3(0.02f,0.02f,0.02f);
-    }
-
-    void OnDrawGizmos() {
-        for (int i = 0; i < 9; i++){
-            Handles.Label(vertices[i],i.ToString());
-        }
     }
 }
