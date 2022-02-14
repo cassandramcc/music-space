@@ -13,7 +13,7 @@ public class ChuckSynth : MonoBehaviour
         }
     }
 
-    public List<Note> buffer = new List<Note>();
+    public List<float> buffer = new List<float>();
     // Start is called before the first frame update
     void Start()
     {
@@ -22,19 +22,20 @@ public class ChuckSynth : MonoBehaviour
 
     public void ReceiveFreqBuffer(List<float> freqs){
         foreach(float f in freqs){
-            buffer.Add(new Note(f));
+            buffer.Add(f);
         }
     }
 
-    public IEnumerator playNotes(){
-        foreach (Note note in buffer ){
-            GetComponent<ChuckSubInstance>().RunCode(string.Format(@"
+    public void playNotes(){
+        GetComponent<ChuckSubInstance>().RunCode(@"
 
-            SinOsc s => dac;
-            {0} => s.freq;
-            200::ms => now;
-            ",note.freq));
-            yield return new WaitForSeconds(0.4f);
-        }  
+        TriOsc t => dac;
+
+        440 => t.freq;
+        500::ms => now;
+        660 => t.freq;
+        500::ms => now;
+
+        "); 
     }
 }

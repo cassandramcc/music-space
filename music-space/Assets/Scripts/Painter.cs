@@ -1,8 +1,10 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.Assertions;
 
 public class Painter : MonoBehaviour
 {
@@ -25,6 +27,8 @@ public class Painter : MonoBehaviour
     List<Vector3> vertices;
 
     List<Vertex> centralVertices = new List<Vertex>();
+
+    List<Vertex> mostRecentVertices = new List<Vertex>();
     int newestVertexDrawn = 0;
     List<int> triangles;
 
@@ -41,8 +45,9 @@ public class Painter : MonoBehaviour
     public GameObject rController;
 
     public GameObject chuckControls;
-        void Start()
-    {
+    void Start() {
+
+        Assert.IsNotNull(chuckControls);
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         vertices = new List<Vector3>();
@@ -63,6 +68,7 @@ public class Painter : MonoBehaviour
         //To stop too many vertices spawning in the same place
         if ((lastPoint - point).magnitude > 0.01f){
             centralVertices.Add(new Vertex(point));
+            mostRecentVertices.Add(new Vertex(point));
             DebugSpheres(point);
             numRecentVertices += 1;
         }
@@ -138,6 +144,19 @@ public class Painter : MonoBehaviour
         }
     }
 
+    void PaintToFreq(){
+        List<float> freqBuffer = new List<float>();
+        foreach(Vertex v in mostRecentVertices){   
+            freqBuffer.Add(VertexToFreq(v));
+        }
+        //chuckControls.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
+        List<double> dFreq = new List<double>();
+        foreach(float f in freqBuffer){
+            dFreq.Add((double)f);
+        }
+        //chuckControls.GetComponent<ChuckSubInstance>().SetFloatArray("freqs",dFreq.ToArray());
+    }
+
     void Update()
     {
 
@@ -151,17 +170,13 @@ public class Painter : MonoBehaviour
 
         else{
             numRecentVertices = 0;
+            PaintToFreq();
+            mostRecentVertices.Clear();
         }
 
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
-            Debug.Log("R pressed");
             
-            List<float> freqBuffer = new List<float>();
-            foreach(Vertex v in centralVertices){   
-                freqBuffer.Add(VertexToFreq(v));
-            }
-            chuckControls.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
-            StartCoroutine(chuckControls.GetComponent<ChuckSynth>().playNotes());
+            chuckControls.GetComponent<ChuckSynth>().playNotes();
         }
         
         lastPoint = point;
@@ -174,8 +189,9 @@ public class Painter : MonoBehaviour
     }
 
     void DebugSpheres(Vector3 point){
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        cube.transform.position = new Vector3(point.x,point.y,point.z);
-        cube.transform.localScale = new Vector3(0.02f,0.02f,0.02f);
+        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphere.name = "@"+sphere.name;
+        sphere.transform.position = new Vector3(point.x,point.y,point.z);
+        sphere.transform.localScale = new Vector3(0.02f,0.02f,0.02f);
     }
 }
