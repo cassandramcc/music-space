@@ -7,18 +7,13 @@ public class ChuckTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //A sanity check to make sure Chuck is producing audio
         GetComponent<ChuckSubInstance>().RunCode(@"
 
-        TriOsc t => dac;
+            TriOsc t => dac;
 
-        440 => t.freq;
-        200::ms => now;
+            440 => t.freq;
+            200::ms => now;
         ");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

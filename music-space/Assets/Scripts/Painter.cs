@@ -175,8 +175,10 @@ public class Painter : MonoBehaviour
         }
 
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
-            
-            chuckControls.GetComponent<ChuckSynth>().playNotes();
+            Debug.Log("Play notes");
+            chuckControls.GetComponent<ChuckSubInstance>().SetFloatArray("freqs",new double[]{440,550,660});
+            chuckControls.GetComponent<ChuckSubInstance>().BroadcastEvent("start");
+            //chuckControls.GetComponent<ChuckSynth>().playNotes();
         }
         
         lastPoint = point;
