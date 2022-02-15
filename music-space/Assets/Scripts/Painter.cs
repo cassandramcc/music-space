@@ -45,9 +45,11 @@ public class Painter : MonoBehaviour
     public GameObject rController;
 
     public GameObject chuckControls;
-    void Start() {
 
+    public ChuckMainInstance mainChuckInstance;
+    void Start() {
         Assert.IsNotNull(chuckControls);
+        Assert.IsNotNull(mainChuckInstance);
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         vertices = new List<Vector3>();
@@ -69,7 +71,7 @@ public class Painter : MonoBehaviour
         if ((lastPoint - point).magnitude > 0.01f){
             centralVertices.Add(new Vertex(point));
             mostRecentVertices.Add(new Vertex(point));
-            DebugSpheres(point);
+            //DebugSpheres(point);
             numRecentVertices += 1;
         }
         mouseCursorUI.transform.position = point;
@@ -149,13 +151,18 @@ public class Painter : MonoBehaviour
         foreach(Vertex v in mostRecentVertices){   
             freqBuffer.Add(VertexToFreq(v));
         }
-        chuckControls.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
+        
         List<double> dFreq = new List<double>();
         foreach(float f in freqBuffer){
             dFreq.Add((double)f);
         }
         Debug.Log(String.Join("",dFreq.ConvertAll(i => i.ToString()).ToArray()));
-        chuckControls.GetComponent<ChuckSubInstance>().SetFloatArray("freqs",dFreq.ToArray());
+        GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
+        ChuckSubInstance newChuckSubInstance = newChuck.GetComponent<ChuckSubInstance>();
+        newChuckSubInstance.enabled = true;
+        //newChuckSubInstance.chuckMainInstance = mainChuckInstance;
+        newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
+        newChuckSubInstance.SetFloatArray("freqs",dFreq.ToArray());
     }
 
     void Update()
@@ -177,7 +184,14 @@ public class Painter : MonoBehaviour
 
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
             Debug.Log("Play notes");
-            chuckControls.GetComponent<ChuckSubInstance>().BroadcastEvent("start");
+            //Play all chucks
+            ChuckSynth[] chucks = GameObject.FindObjectsOfType<ChuckSynth>();
+            //Perhaps put all chucks into one parent and call on children at once? Possible faster?
+            foreach(ChuckSynth c in chucks){
+                Debug.Log(c.GetComponent<ChuckSubInstance>());
+                c.gameObject.GetComponent<ChuckSubInstance>().BroadcastEvent("start");
+            }
+            
         }
         
         lastPoint = point;

@@ -489,6 +489,7 @@ public class ChuckSubInstance : MonoBehaviour
         // find one in TheChuck
         if( chuckMainInstance == null )
         {
+            Debug.Log("No main");
             chuckMainInstance = TheChuck.instance;
         }
 

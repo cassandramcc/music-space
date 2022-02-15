@@ -10,10 +10,26 @@ public class ChuckTest : MonoBehaviour
         //A sanity check to make sure Chuck is producing audio
         GetComponent<ChuckSubInstance>().RunCode(@"
 
-            TriOsc t => dac;
+            TriOsc foo => ADSR env1 =>  dac;
+            env1 => Delay delay1 => dac;
+            delay1 => delay1;
+            0.3 => foo.gain;
+            200::ms => delay1.max;
+            50::ms => delay1.delay;
+            0.5 => delay1.gain;
 
-            440 => t.freq;
-            200::ms => now;
+            (10::ms,100::ms,0,10::ms) => env1.set;
+
+            [440,550,880,770,880,550,440,770] @=> int l[];
+
+
+            for( 0 => int i; i < l.cap() ; i++ )
+            {
+                // debug-print value of 'foo'
+                l[i] => foo.freq;
+                1 => env1.keyOn;
+                100::ms => now;
+            }
         ");
     }
 }
