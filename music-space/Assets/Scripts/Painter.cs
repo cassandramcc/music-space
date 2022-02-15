@@ -149,12 +149,13 @@ public class Painter : MonoBehaviour
         foreach(Vertex v in mostRecentVertices){   
             freqBuffer.Add(VertexToFreq(v));
         }
-        //chuckControls.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
+        chuckControls.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
         List<double> dFreq = new List<double>();
         foreach(float f in freqBuffer){
             dFreq.Add((double)f);
         }
-        //chuckControls.GetComponent<ChuckSubInstance>().SetFloatArray("freqs",dFreq.ToArray());
+        Debug.Log(String.Join("",dFreq.ConvertAll(i => i.ToString()).ToArray()));
+        chuckControls.GetComponent<ChuckSubInstance>().SetFloatArray("freqs",dFreq.ToArray());
     }
 
     void Update()
@@ -168,7 +169,7 @@ public class Painter : MonoBehaviour
             DrawTriangles();
         }
 
-        else{
+        else if(controller.GetComponent<ActionBasedController>().activateAction.action.WasReleasedThisFrame()){
             numRecentVertices = 0;
             PaintToFreq();
             mostRecentVertices.Clear();
@@ -176,9 +177,7 @@ public class Painter : MonoBehaviour
 
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
             Debug.Log("Play notes");
-            chuckControls.GetComponent<ChuckSubInstance>().SetFloatArray("freqs",new double[]{440,550,660});
             chuckControls.GetComponent<ChuckSubInstance>().BroadcastEvent("start");
-            //chuckControls.GetComponent<ChuckSynth>().playNotes();
         }
         
         lastPoint = point;
@@ -186,7 +185,7 @@ public class Painter : MonoBehaviour
 
     float VertexToFreq(Vertex v){
         //output = output_start + ((output_end - output_start) / (input_end - input_start)) * (input - input_start)
-        float output = 261.63f + ((466.16f - 261.63f)/1f - 0f) * (v.pos.y - 0f);
+        float output = 261.63f + ((466.16f - 261.63f)/0.7f - 0f) * (v.pos.y - 0f);
         return output;
     }
 

@@ -13,9 +13,6 @@ public class ChuckSynth : MonoBehaviour
         }
     }
 
-    double[] synthbuffer = new double[3];
-    ChuckFloatSyncer bufferSyncer;
-
     public List<float> buffer = new List<float>();
     // Start is called before the first frame update
     void Start(){
@@ -44,24 +41,11 @@ public class ChuckSynth : MonoBehaviour
                 freqs[2] => freq3;
             }
         ");
-        bufferSyncer = gameObject.AddComponent<ChuckFloatSyncer>();
-        bufferSyncer.SyncFloat(GetComponent<ChuckSubInstance>(),"freq3");
     }
 
     public void ReceiveFreqBuffer(List<float> freqs){
         foreach(float f in freqs){
             buffer.Add(f);
         }
-    }
-
-    void Update(){
-        Debug.Log(bufferSyncer.GetCurrentValue());
-    }
-
-    public void playNotes(){
-        GetComponent<ChuckSubInstance>().RunCode(@"
-
-            
-        "); 
     }
 }
