@@ -485,11 +485,11 @@ public class ChuckSubInstance : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
+        chuckMainInstance = GameObject.Find("Chuck Main").GetComponent<ChuckMainInstance>();
         // if I don't have a ChuckMainInstance at Awake, see if I can 
         // find one in TheChuck
         if( chuckMainInstance == null )
         {
-            Debug.Log("No main");
             chuckMainInstance = TheChuck.instance;
         }
 
@@ -519,6 +519,8 @@ public class ChuckSubInstance : MonoBehaviour
 
         // setup chuck
         myOutputUgen = chuckMainInstance.GetUniqueVariableName( "__dac__" );
+        Debug.Log("The output Ugen");
+        Debug.Log(myOutputUgen);
         // replacement dac is initted and constructed here!
         // so it shouldn't have to be anywhere else.
         chuckMainInstance.RunCode( string.Format( @"

@@ -46,7 +46,6 @@ public class Painter : MonoBehaviour
 
     public GameObject chuckControls;
 
-    public ChuckMainInstance mainChuckInstance;
     void Start() {
         Assert.IsNotNull(chuckControls);
         Assert.IsNotNull(mainChuckInstance);
@@ -160,7 +159,6 @@ public class Painter : MonoBehaviour
         GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
         ChuckSubInstance newChuckSubInstance = newChuck.GetComponent<ChuckSubInstance>();
         newChuckSubInstance.enabled = true;
-        //newChuckSubInstance.chuckMainInstance = mainChuckInstance;
         newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
         newChuckSubInstance.SetFloatArray("freqs",dFreq.ToArray());
     }
