@@ -48,7 +48,6 @@ public class Painter : MonoBehaviour
 
     void Start() {
         Assert.IsNotNull(chuckControls);
-        Assert.IsNotNull(mainChuckInstance);
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         vertices = new List<Vector3>();
@@ -155,11 +154,11 @@ public class Painter : MonoBehaviour
         foreach(float f in freqBuffer){
             dFreq.Add((double)f);
         }
-        Debug.Log(String.Join("",dFreq.ConvertAll(i => i.ToString()).ToArray()));
+        //Debug.Log(String.Join("",dFreq.ConvertAll(i => i.ToString()).ToArray()));
         GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
         ChuckSubInstance newChuckSubInstance = newChuck.GetComponent<ChuckSubInstance>();
         newChuckSubInstance.enabled = true;
-        newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
+        //newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
         newChuckSubInstance.SetFloatArray("freqs",dFreq.ToArray());
     }
 

@@ -519,8 +519,6 @@ public class ChuckSubInstance : MonoBehaviour
 
         // setup chuck
         myOutputUgen = chuckMainInstance.GetUniqueVariableName( "__dac__" );
-        Debug.Log("The output Ugen");
-        Debug.Log(myOutputUgen);
         // replacement dac is initted and constructed here!
         // so it shouldn't have to be anywhere else.
         chuckMainInstance.RunCode( string.Format( @"

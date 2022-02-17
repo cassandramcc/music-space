@@ -13,13 +13,13 @@ public class ChuckSynth : MonoBehaviour
         }
     }
 
-    //Chuck.FloatArrayCallback floatArrayCallback;
+    Chuck.FloatArrayCallback floatArrayCallback;
 
     public List<float> buffer = new List<float>();
     // Start is called before the first frame update
     void Start(){
 
-        //floatArrayCallback = GetComponent<ChuckSubInstance>().CreateGetFloatArrayCallback( GetFreqs );
+        floatArrayCallback = GetComponent<ChuckSubInstance>().CreateGetFloatArrayCallback( GetFreqs );
         GetComponent<ChuckSubInstance>().RunCode(@"
             fun void playNotes(float fs[]){
                 chout <= "" play notes "" <= IO.newline();
@@ -32,13 +32,18 @@ public class ChuckSynth : MonoBehaviour
                 0.5 => delay1.gain;
                 0.1 => rev1.mix;
 
+                chout <= "" before for "" <= IO.newline();
                 (10::ms,100::ms,0,10::ms) => env1.set;
+                chout <= "" size of fs "" <= fs.cap() <= IO.newline();
                 for (0 => int i; i < fs.cap(); i++){
+                    //chout <= "" in for "" <= IO.newline();
                     200::ms => now;
                     fs[i] => t.freq;
+                    //chout <= "" freq "" <= fs[i] <= IO.newline();
                     1 => env1.keyOn;
                     100::ms => now;
                 }
+                chout <= "" end for "" <= IO.newline();
    
             }
             global float freqs[1000];
@@ -53,11 +58,11 @@ public class ChuckSynth : MonoBehaviour
     }
 
     void Update(){
-        //GetComponent<ChuckSubInstance>().GetFloatArray("freqs",floatArrayCallback);
+        GetComponent<ChuckSubInstance>().GetFloatArray("freqs",floatArrayCallback);
     }
 
     void GetFreqs(float[] freqs){
-
+        buffer = freqs;
     }
 
     public void ReceiveFreqBuffer(List<float> freqs){
