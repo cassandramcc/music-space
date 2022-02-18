@@ -36,7 +36,7 @@ public class ChuckSynth : MonoBehaviour
                 (10::ms,100::ms,0,10::ms) => env1.set;
                 for (0 => int i; i < fs.cap(); i++){{
                     200::ms => now;
-                    fs[i] => t.freq;
+                    Std.mtof(fs[i]) => t.freq;
                     1 => env1.keyOn;
                     100::ms => now;
                 }}

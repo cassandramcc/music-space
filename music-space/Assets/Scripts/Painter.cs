@@ -149,7 +149,7 @@ public class Painter : MonoBehaviour
     void PaintToFreq(){
         List<float> freqBuffer = new List<float>();
         foreach(Vertex v in mostRecentVertices){   
-            freqBuffer.Add(VertexToFreq(v));
+            freqBuffer.Add(VertexToNote(v));
         }
         
         List<double> dFreq = new List<double>();
@@ -205,9 +205,9 @@ public class Painter : MonoBehaviour
         lastPoint = point;
     }
 
-    float VertexToFreq(Vertex v){
+    float VertexToNote(Vertex v){
         //output = output_start + ((output_end - output_start) / (input_end - input_start)) * (input - input_start)
-        float output = 261.63f + ((466.16f - 261.63f)/0.7f - 0f) * (v.pos.y - 0f);
+        int output = (int)(36 + ((84 - 36)/0.7f - 0f) * (v.pos.y - 0f));
         return output;
     }
 
