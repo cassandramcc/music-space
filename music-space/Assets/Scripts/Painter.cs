@@ -46,6 +46,8 @@ public class Painter : MonoBehaviour
 
     public GameObject chuckControls;
 
+    int chuckCounter = 1;
+
     void Start() {
         Assert.IsNotNull(chuckControls);
         mesh = new Mesh();
@@ -151,15 +153,23 @@ public class Painter : MonoBehaviour
         }
         
         List<double> dFreq = new List<double>();
+        //have to convert the floats to doubles because a chuck float is actually a double
         foreach(float f in freqBuffer){
             dFreq.Add((double)f);
         }
-        //Debug.Log(String.Join("",dFreq.ConvertAll(i => i.ToString()).ToArray()));
+        
         GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
+        newChuck.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
+        
         ChuckSubInstance newChuckSubInstance = newChuck.GetComponent<ChuckSubInstance>();
+        //the sub instance component is for some reason disabled on instantiation
         newChuckSubInstance.enabled = true;
-        //newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
-        newChuckSubInstance.SetFloatArray("freqs",dFreq.ToArray());
+        //Different chuck sub instances have to have different array names for the frequencies, so this is the crude way to do it.
+        newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),dFreq.ToArray());
+        chuckCounter++;
+
+        // ? Do the chucks still need this array?
+        newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
     }
 
     void Update()
@@ -184,6 +194,7 @@ public class Painter : MonoBehaviour
             //Play all chucks
             ChuckSynth[] chucks = GameObject.FindObjectsOfType<ChuckSynth>();
             //Perhaps put all chucks into one parent and call on children at once? Possible faster?
+
             foreach(ChuckSynth c in chucks){
                 Debug.Log(c.GetComponent<ChuckSubInstance>());
                 c.gameObject.GetComponent<ChuckSubInstance>().BroadcastEvent("start");
