@@ -2,9 +2,9 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.Assertions;
+using System.Linq;
 
 public class Painter : MonoBehaviour
 {
@@ -146,16 +146,16 @@ public class Painter : MonoBehaviour
         }
     }
 
-    void PaintToFreq(){
-        List<float> freqBuffer = new List<float>();
+    void PaintToNotes(){
+        List<float> noteBuffer = new List<float>();
         foreach(Vertex v in mostRecentVertices){   
-            freqBuffer.Add(VertexToNote(v));
+            noteBuffer.Add(VertexToNote(v));
         }
         
-        List<double> dFreq = new List<double>();
+        List<double> notesAsDouble = new List<double>();
         //have to convert the floats to doubles because a chuck float is actually a double
-        foreach(float f in freqBuffer){
-            dFreq.Add((double)f);
+        foreach(int n in noteBuffer){
+            notesAsDouble.Add((double)n);
         }
         
         GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
@@ -165,11 +165,15 @@ public class Painter : MonoBehaviour
         //the sub instance component is for some reason disabled on instantiation
         newChuckSubInstance.enabled = true;
         //Different chuck sub instances have to have different array names for the frequencies, so this is the crude way to do it.
-        newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),dFreq.ToArray());
+        newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),notesAsDouble.ToArray());
         chuckCounter++;
 
         // ? Do the chucks still need this array?
-        newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(freqBuffer);
+        newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(noteBuffer);
+    }
+
+    void GiveNotesToChuck(){
+
     }
 
     void Update()
@@ -185,7 +189,7 @@ public class Painter : MonoBehaviour
 
         else if(controller.GetComponent<ActionBasedController>().activateAction.action.WasReleasedThisFrame()){
             numRecentVertices = 0;
-            PaintToFreq();
+            PaintToNotes();
             mostRecentVertices.Clear();
         }
 
@@ -205,10 +209,19 @@ public class Painter : MonoBehaviour
         lastPoint = point;
     }
 
+
     float VertexToNote(Vertex v){
-        //output = output_start + ((output_end - output_start) / (input_end - input_start)) * (input - input_start)
-        int output = (int)(36 + ((84 - 36)/0.7f - 0f) * (v.pos.y - 0f));
+        Scale scale = new Scale(Root.CMajor);
+        //output start, output end, input start, input end
+        IEnumerable<int> range = scale.notes;
+        List<int> allNotes = new List<int>();
+        for (int i = 0; i < 4; i++){
+            allNotes.AddRange(range.Select(n => n + i*12));
+        }
+        int output = (int)Mathf.Lerp (48+scale.notes[0], 48+scale.notes[6], Mathf.InverseLerp (0, 0.7f, v.pos.y));
+        Debug.Log(output);
         return output;
+        
     }
 
     void DebugSpheres(Vector3 point){
