@@ -146,18 +146,34 @@ public class Painter : MonoBehaviour
         }
     }
 
-    void PaintToNotes(){
-        List<float> noteBuffer = new List<float>();
-        foreach(Vertex v in mostRecentVertices){   
-            noteBuffer.Add(VertexToNote(v));
-        }
+    double[] PaintToNotes(List<Vertex> vertices){
+        // ! Will need to make this variable
+        Scale scale = new Scale(Root.CMajor);
         
+
+        //Generating the base notes for the vertices
+        IEnumerable<int> baseNotes = scale.notes;
+        List<int> rangeNotes = new List<int>();
+        for (int i = 0; i < 4; i++){
+            rangeNotes.AddRange(baseNotes.Select(n => n + i*12));
+        }
+
+        List<int> noteBuffer = new List<int>();
+        foreach(Vertex v in vertices){   
+            noteBuffer.Add(VertexToNote(v,rangeNotes));
+        }
+
         List<double> notesAsDouble = new List<double>();
         //have to convert the floats to doubles because a chuck float is actually a double
         foreach(int n in noteBuffer){
             notesAsDouble.Add((double)n);
         }
-        
+        return notesAsDouble.ToArray();  
+    }
+
+    void GiveNotesToChuck(){
+        double[] notesForChuck = PaintToNotes(mostRecentVertices);
+
         GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
         newChuck.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
         
@@ -165,20 +181,15 @@ public class Painter : MonoBehaviour
         //the sub instance component is for some reason disabled on instantiation
         newChuckSubInstance.enabled = true;
         //Different chuck sub instances have to have different array names for the frequencies, so this is the crude way to do it.
-        newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),notesAsDouble.ToArray());
+        newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),notesForChuck);
         chuckCounter++;
 
         // ? Do the chucks still need this array?
-        newChuck.GetComponent<ChuckSynth>().ReceiveFreqBuffer(noteBuffer);
-    }
-
-    void GiveNotesToChuck(){
-
+        newChuck.GetComponent<ChuckSynth>().noteBuffer = notesForChuck;
     }
 
     void Update()
     {
-
         Vector3 point = controller.transform.position;
 
         if (controller.GetComponent<ActionBasedController>().activateAction.action.ReadValue<float>() > 0.8){
@@ -189,13 +200,11 @@ public class Painter : MonoBehaviour
 
         else if(controller.GetComponent<ActionBasedController>().activateAction.action.WasReleasedThisFrame()){
             numRecentVertices = 0;
-            PaintToNotes();
+            GiveNotesToChuck();
             mostRecentVertices.Clear();
         }
 
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
-            Debug.Log("Play notes");
-            //Play all chucks
             ChuckSynth[] chucks = GameObject.FindObjectsOfType<ChuckSynth>();
             //Perhaps put all chucks into one parent and call on children at once? Possible faster?
 
@@ -203,25 +212,24 @@ public class Painter : MonoBehaviour
                 Debug.Log(c.GetComponent<ChuckSubInstance>());
                 c.gameObject.GetComponent<ChuckSubInstance>().BroadcastEvent("start");
             }
-            
         }
-        
         lastPoint = point;
     }
 
 
-    float VertexToNote(Vertex v){
-        Scale scale = new Scale(Root.CMajor);
+    //The range are the values the notes are allowed to have
+    //Turning the range of vertex heights into notes
+    int VertexToNote(Vertex v, List<int> range){
         //output start, output end, input start, input end
-        IEnumerable<int> range = scale.notes;
-        List<int> allNotes = new List<int>();
-        for (int i = 0; i < 4; i++){
-            allNotes.AddRange(range.Select(n => n + i*12));
+        int output = (int)Mathf.Lerp (range[0], range[range.Count - 1], Mathf.InverseLerp (0, 1f, v.pos.y));
+
+        //If note from lerp inverselerp is not in range, just minus 1 to get a correct note.
+        if (!range.Contains(output)){
+            output-=1;
         }
-        int output = (int)Mathf.Lerp (48+scale.notes[0], 48+scale.notes[6], Mathf.InverseLerp (0, 0.7f, v.pos.y));
-        Debug.Log(output);
-        return output;
-        
+
+        //Add 48 to translate into midi notes. 48 is C3.
+        return output+48;
     }
 
     void DebugSpheres(Vector3 point){

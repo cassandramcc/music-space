@@ -14,7 +14,20 @@ public enum Root{
     GSMajor,
     DSMajor,
     ASMajor,
-    FMajor
+    FMajor,
+
+    AMinor = 0,
+    EMinor = 1,
+    BMinor = 2,
+    FSMinor = 3,
+    CSMinor = 4,
+    GSMinor = 5,
+    DSMinor = 6,
+    ASMinor = 7,
+    FMinor = 8,
+    CMinor = 9,
+    GMinor = 10,
+    DMinor = 11
 }
 
 

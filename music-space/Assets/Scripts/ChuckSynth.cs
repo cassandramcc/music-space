@@ -5,19 +5,7 @@ using UnityEngine;
 public class ChuckSynth : MonoBehaviour
 {
 
-    public class Note{
-        public float freq;
-
-        public Note(float _freq){
-            freq = _freq;
-        }
-    }
-
-    ChuckFloatSyncer getFreq;
-    public float firstFreq;
-
-    public List<float> buffer = new List<float>();
-
+    public double[] noteBuffer;
     public string freqArrayName;
     // Start is called before the first frame update
     void Start(){
@@ -51,21 +39,5 @@ public class ChuckSynth : MonoBehaviour
                 spork ~ playNotes({0});
             }}
         ",freqArrayName));
-
-        getFreq = gameObject.AddComponent<ChuckFloatSyncer>();
-        getFreq.SyncFloat( GetComponent<ChuckSubInstance>(), "startFreq" );
-    }
-
-    void Update(){
-       firstFreq = getFreq.GetCurrentValue();
-    }
-
-
-
-
-    public void ReceiveFreqBuffer(List<float> freqs){
-        foreach(float f in freqs){
-            buffer.Add(f);
-        }
     }
 }
