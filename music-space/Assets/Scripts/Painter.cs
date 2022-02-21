@@ -146,11 +146,25 @@ public class Painter : MonoBehaviour
         }
     }
 
+    //The range are the values the notes are allowed to have
+    //Turning the range of vertex heights into notes
+    int VertexToNote(Vertex v, List<int> range){
+        //output start, output end, input start, input end
+        int output = (int)Mathf.Lerp (range[0], range[range.Count - 1], Mathf.InverseLerp (0, 1f, v.pos.y));
+
+        //If note from lerp inverselerp is not in range, just minus 1 to get a correct note.
+        if (!range.Contains(output)){
+            output-=1;
+        }
+
+        //Add 48 to translate into midi notes. 48 is C3.
+        return output+48;
+    }
+
     double[] PaintToNotes(List<Vertex> vertices){
         // ! Will need to make this variable
         Scale scale = new Scale(Root.CMajor);
         
-
         //Generating the base notes for the vertices
         IEnumerable<int> baseNotes = scale.notes;
         List<int> rangeNotes = new List<int>();
@@ -169,6 +183,30 @@ public class Painter : MonoBehaviour
             notesAsDouble.Add((double)n);
         }
         return notesAsDouble.ToArray();  
+    }
+
+
+    public Tuple<List<Double>, List<int>> NotesToTimes(double[] notes){
+        List<Double> newNotes = new List<double>();
+        List<int> times = new List<int>();
+        double prevNote = notes[0];
+        int time = 100;
+        int scale = 100;
+        foreach(double n in notes){
+            if (prevNote == n){
+                time = time+scale;
+            }
+            else{
+                newNotes.Add(prevNote);
+                prevNote = n;
+                times.Add(time);
+                time = 100;
+            }
+        }
+        newNotes.Add(notes[notes.Count()-1]);
+        times.Add(time);
+        times[0] -= 100; 
+        return new Tuple<List<Double>, List<int>>(newNotes,times);
     }
 
     void GiveNotesToChuck(){
@@ -217,20 +255,7 @@ public class Painter : MonoBehaviour
     }
 
 
-    //The range are the values the notes are allowed to have
-    //Turning the range of vertex heights into notes
-    int VertexToNote(Vertex v, List<int> range){
-        //output start, output end, input start, input end
-        int output = (int)Mathf.Lerp (range[0], range[range.Count - 1], Mathf.InverseLerp (0, 1f, v.pos.y));
 
-        //If note from lerp inverselerp is not in range, just minus 1 to get a correct note.
-        if (!range.Contains(output)){
-            output-=1;
-        }
-
-        //Add 48 to translate into midi notes. 48 is C3.
-        return output+48;
-    }
 
     void DebugSpheres(Vector3 point){
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
