@@ -7,11 +7,12 @@ public class ChuckSynth : MonoBehaviour
 
     public double[] noteBuffer;
     public string freqArrayName;
+    public string timeArray;
     // Start is called before the first frame update
     void Start(){
         
         GetComponent<ChuckSubInstance>().RunCode(string.Format(@"
-            fun void playNotes(float fs[]){{
+            fun void playNotes(float fs[], int times[]){{
                 TriOsc t => ADSR env1 => NRev rev1 =>  dac;
                 env1 => Delay delay1 => dac;
                 delay1 => delay1;
@@ -21,22 +22,21 @@ public class ChuckSynth : MonoBehaviour
                 0.5 => delay1.gain;
                 0.1 => rev1.mix;
 
-                (10::ms,100::ms,0,10::ms) => env1.set;
+                (10::ms,600::ms,0,100::ms) => env1.set;
                 for (0 => int i; i < fs.cap(); i++){{
                     Std.mtof(fs[i]) => t.freq;
                     1 => env1.keyOn;
-                    300::ms => now;
+                    times[i]::ms => now;
                 }}
    
             }}
             global float {0}[1000];
+            global int {1}[1000];
             global Event start;
-            global float startFreq;
             while (true) {{
-                {0}[0] => startFreq;
                 start => now;
-                spork ~ playNotes({0});
+                spork ~ playNotes({0},{1});
             }}
-        ",freqArrayName));
+        ",freqArrayName,timeArray));
     }
 }

@@ -163,7 +163,7 @@ public class Painter : MonoBehaviour
 
     double[] PaintToNotes(List<Vertex> vertices){
         // ! Will need to make this variable
-        Scale scale = new Scale(Root.CMajor);
+        Scale scale = new Scale(Root.FMajor);
         
         //Generating the base notes for the vertices
         IEnumerable<int> baseNotes = scale.notes;
@@ -186,11 +186,12 @@ public class Painter : MonoBehaviour
     }
 
 
-    public Tuple<List<Double>, List<int>> NotesToTimes(double[] notes){
+    public Tuple<List<Double>, List<long>> NotesToTimes(double[] notes){
         List<Double> newNotes = new List<double>();
-        List<int> times = new List<int>();
+        //Because chuck wants ints to be longs
+        List<long> times = new List<long>();
         double prevNote = notes[0];
-        int time = 100;
+        long time = 100;
         int scale = 100;
         foreach(double n in notes){
             if (prevNote == n){
@@ -206,20 +207,24 @@ public class Painter : MonoBehaviour
         newNotes.Add(notes[notes.Count()-1]);
         times.Add(time);
         times[0] -= 100; 
-        return new Tuple<List<Double>, List<int>>(newNotes,times);
+        return new Tuple<List<Double>, List<long>>(newNotes,times);
     }
 
     void GiveNotesToChuck(){
         double[] notesForChuck = PaintToNotes(mostRecentVertices);
+        //Item 1 = notes, item 2 = times
+        Tuple<List<Double>, List<long>> correctedNotes = NotesToTimes(notesForChuck);
 
         GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
         newChuck.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
+        newChuck.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
         
         ChuckSubInstance newChuckSubInstance = newChuck.GetComponent<ChuckSubInstance>();
         //the sub instance component is for some reason disabled on instantiation
         newChuckSubInstance.enabled = true;
         //Different chuck sub instances have to have different array names for the frequencies, so this is the crude way to do it.
-        newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),notesForChuck);
+        newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),correctedNotes.Item1.ToArray());
+        newChuckSubInstance.SetIntArray("times" + chuckCounter.ToString(),correctedNotes.Item2.ToArray());
         chuckCounter++;
 
         // ? Do the chucks still need this array?
