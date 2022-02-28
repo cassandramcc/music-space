@@ -16,7 +16,7 @@ public class TestInput : MonoBehaviour
 
     private void Action_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
-        Debug.Log(controller.activateAction.action.ReadValue<float>());
+        //Debug.Log(controller.activateAction.action.ReadValue<float>());
     }
 
     // Update is called once per frame

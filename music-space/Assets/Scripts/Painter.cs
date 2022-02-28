@@ -9,7 +9,7 @@ using System.Linq;
 public class Painter : MonoBehaviour
 {
 
-    class Vertex{
+    public class Vertex{
         public Vector3 pos;
         public List<Vector3> edgeVertices = new List<Vector3>();
 
@@ -24,13 +24,15 @@ public class Painter : MonoBehaviour
     }
 
     Mesh mesh;
-    List<Vector3> vertices;
+    public List<Vector3> vertices;
 
     List<Vertex> centralVertices = new List<Vertex>();
 
     List<Vertex> mostRecentVertices = new List<Vertex>();
+
+    List<Vector3> mostRecentEdgeVertices = new List<Vector3>();
     int newestVertexDrawn = 0;
-    List<int> triangles;
+    public List<int> triangles;
 
     bool drawTriangles;
     int numRecentVertices;
@@ -47,6 +49,9 @@ public class Painter : MonoBehaviour
     public GameObject chuckControls;
 
     int chuckCounter = 1;
+
+    List<int> mostRecentTriangles = new List<int>();
+    
 
     void Start() {
         Assert.IsNotNull(chuckControls);
@@ -107,7 +112,9 @@ public class Painter : MonoBehaviour
             Vertex start = centralVertices[centralVertices.Count - 3];
             Vertex end = centralVertices[centralVertices.Count - 2];
             vertices.AddRange(start.edgeVertices);
+            mostRecentEdgeVertices.AddRange(start.edgeVertices);
             vertices.AddRange(end.edgeVertices);
+            mostRecentEdgeVertices.AddRange(end.edgeVertices);
             int startVertex = vertices.Count - 8;
             //If you want different shapes, will need to make this number changeable.
             if (start.pos.x > end.pos.x){
@@ -124,9 +131,35 @@ public class Painter : MonoBehaviour
                     startVertex+5,startVertex+1,startVertex+2,
                     startVertex+6,startVertex+5,startVertex+2
                 }); 
+                mostRecentTriangles.AddRange(new int[]{
+                    startVertex+5, startVertex,startVertex+1,
+                    startVertex,startVertex+5,startVertex+4,
+
+                    startVertex+3,startVertex,startVertex+7,
+                    startVertex+7,startVertex,startVertex+4,
+
+                    startVertex+2,startVertex+3,startVertex+6,
+                    startVertex+6,startVertex+3,startVertex+7,
+
+                    startVertex+5,startVertex+1,startVertex+2,
+                    startVertex+6,startVertex+5,startVertex+2
+                });
             }
             else{
                 triangles.AddRange(new int[]{
+                    startVertex, startVertex+1,startVertex+5,
+                    startVertex,startVertex+5,startVertex+4,
+
+                    startVertex,startVertex+7,startVertex+3,
+                    startVertex,startVertex+4,startVertex+7,
+
+                    startVertex+3,startVertex+6,startVertex+2,
+                    startVertex+3,startVertex+7,startVertex+6,
+
+                    startVertex+1,startVertex+2,startVertex+5,
+                    startVertex+5,startVertex+2,startVertex+6
+                });
+                mostRecentTriangles.AddRange(new int[]{
                     startVertex, startVertex+1,startVertex+5,
                     startVertex,startVertex+5,startVertex+4,
 
@@ -218,6 +251,12 @@ public class Painter : MonoBehaviour
         GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
         newChuck.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
         newChuck.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
+        //newChuck.GetComponent<PaintHolder>().centralVertices = mostRecentVertices;
+        newChuck.GetComponent<PaintHolder>().meshVertices = mostRecentEdgeVertices;
+        Debug.Log("Most recent edge vertices: "+mostRecentEdgeVertices.Count);
+        newChuck.GetComponent<PaintHolder>().triangles = mostRecentTriangles;
+        Debug.Log("Give notes to chuck");
+        newChuck.GetComponent<PaintHolder>().UpdateMesh();
         
         ChuckSubInstance newChuckSubInstance = newChuck.GetComponent<ChuckSubInstance>();
         //the sub instance component is for some reason disabled on instantiation
@@ -245,6 +284,8 @@ public class Painter : MonoBehaviour
             numRecentVertices = 0;
             GiveNotesToChuck();
             mostRecentVertices.Clear();
+            mostRecentTriangles.Clear();
+            mostRecentEdgeVertices.Clear();
         }
 
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
