@@ -12,11 +12,6 @@ public class Painter : MonoBehaviour
     public class Vertex{
         public Vector3 pos;
         public List<Vector3> edgeVertices = new List<Vector3>();
-
-        public Vector3 direction;
-        public Vector3 orthoDirection;
-
-        public Vector3 rotated;
         public Vertex(Vector3 _pos){
             pos = _pos;
         }
@@ -31,17 +26,9 @@ public class Painter : MonoBehaviour
     List<Vertex> mostRecentVertices = new List<Vertex>();
 
     List<Vector3> mostRecentEdgeVertices = new List<Vector3>();
-    int newestVertexDrawn = 0;
     public List<int> triangles;
-
-    bool drawTriangles;
     int numRecentVertices;
-
-    public Camera cam;
-
     Vector3 lastPoint;
-
-    public GameObject mouseCursorUI;
 
     public GameObject controller;
     public GameObject rController;
@@ -67,7 +54,6 @@ public class Painter : MonoBehaviour
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
-        newestVertexDrawn = vertices.Count;
     }
 
     void DrawPoint(){
@@ -79,7 +65,6 @@ public class Painter : MonoBehaviour
             //DebugSpheres(point);
             numRecentVertices += 1;
         }
-        mouseCursorUI.transform.position = point;
     }
 
     void CalculateVertexDirection(){
@@ -87,15 +72,12 @@ public class Painter : MonoBehaviour
             Vector3 direction = centralVertices[centralVertices.Count-1].pos - centralVertices[centralVertices.Count - 2].pos;
             direction = direction/direction.magnitude; //normalised direction
             Vertex lastVertex = centralVertices[centralVertices.Count - 2];
-            lastVertex.direction = direction;
             //this is the direction between first vertex and the next vertex
             //the first vertex's points need to be in the perpedincular direction
             Vector3 perpendicular = new Vector3();
             Vector3.OrthoNormalize(ref direction,ref perpendicular);
-            lastVertex.orthoDirection = perpendicular;
             Vector3 rotation = perpendicular * Mathf.Cos(Mathf.PI/2) + (Vector3.Cross(direction,perpendicular))*Mathf.Sin(Mathf.PI/2) + direction*(Vector3.Dot(perpendicular,direction))*(1-Mathf.Cos(Mathf.PI/2));
             //the point 180 degrees away from the perp vector
-            lastVertex.rotated = rotation;
             
             //Create points on plane defined by this perpendicular by rotating the perp vector around the direction as the axis
             for (int i = 0; i <= 270; i+=90){
@@ -111,6 +93,7 @@ public class Painter : MonoBehaviour
         if (numRecentVertices >=3){
             Vertex start = centralVertices[centralVertices.Count - 3];
             Vertex end = centralVertices[centralVertices.Count - 2];
+            Debug.Log(start.pos);
             vertices.AddRange(start.edgeVertices);
             mostRecentEdgeVertices.AddRange(start.edgeVertices);
             vertices.AddRange(end.edgeVertices);
@@ -118,7 +101,7 @@ public class Painter : MonoBehaviour
             int startVertex = vertices.Count - 8;
             //If you want different shapes, will need to make this number changeable.
             if (start.pos.x > end.pos.x){
-                triangles.AddRange(new int[]{
+                int[] tris = new int[]{
                     startVertex+5, startVertex,startVertex+1,
                     startVertex,startVertex+5,startVertex+4,
 
@@ -130,23 +113,12 @@ public class Painter : MonoBehaviour
 
                     startVertex+5,startVertex+1,startVertex+2,
                     startVertex+6,startVertex+5,startVertex+2
-                }); 
-                mostRecentTriangles.AddRange(new int[]{
-                    startVertex+5, startVertex,startVertex+1,
-                    startVertex,startVertex+5,startVertex+4,
-
-                    startVertex+3,startVertex,startVertex+7,
-                    startVertex+7,startVertex,startVertex+4,
-
-                    startVertex+2,startVertex+3,startVertex+6,
-                    startVertex+6,startVertex+3,startVertex+7,
-
-                    startVertex+5,startVertex+1,startVertex+2,
-                    startVertex+6,startVertex+5,startVertex+2
-                });
+                };
+                triangles.AddRange(tris); 
+                mostRecentTriangles.AddRange(tris);
             }
             else{
-                triangles.AddRange(new int[]{
+                int[] tris = new int[]{
                     startVertex, startVertex+1,startVertex+5,
                     startVertex,startVertex+5,startVertex+4,
 
@@ -158,20 +130,9 @@ public class Painter : MonoBehaviour
 
                     startVertex+1,startVertex+2,startVertex+5,
                     startVertex+5,startVertex+2,startVertex+6
-                });
-                mostRecentTriangles.AddRange(new int[]{
-                    startVertex, startVertex+1,startVertex+5,
-                    startVertex,startVertex+5,startVertex+4,
-
-                    startVertex,startVertex+7,startVertex+3,
-                    startVertex,startVertex+4,startVertex+7,
-
-                    startVertex+3,startVertex+6,startVertex+2,
-                    startVertex+3,startVertex+7,startVertex+6,
-
-                    startVertex+1,startVertex+2,startVertex+5,
-                    startVertex+5,startVertex+2,startVertex+6
-                });
+                };
+                triangles.AddRange(tris);
+                mostRecentTriangles.AddRange(tris);
             }
             
             //draw triangles between last vertex and last last vertex.
@@ -251,11 +212,11 @@ public class Painter : MonoBehaviour
         GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
         newChuck.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
         newChuck.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
-        //newChuck.GetComponent<PaintHolder>().centralVertices = mostRecentVertices;
+
         newChuck.GetComponent<PaintHolder>().meshVertices = mostRecentEdgeVertices;
-        Debug.Log("Most recent edge vertices: "+mostRecentEdgeVertices.Count);
+        //Debug.Log("Most recent edge vertices: "+mostRecentEdgeVertices.Count);
         newChuck.GetComponent<PaintHolder>().triangles = mostRecentTriangles;
-        Debug.Log("Give notes to chuck");
+        //Debug.Log("Give notes to chuck");
         newChuck.GetComponent<PaintHolder>().UpdateMesh();
         
         ChuckSubInstance newChuckSubInstance = newChuck.GetComponent<ChuckSubInstance>();
@@ -293,7 +254,6 @@ public class Painter : MonoBehaviour
             //Perhaps put all chucks into one parent and call on children at once? Possible faster?
 
             foreach(ChuckSynth c in chucks){
-                Debug.Log(c.GetComponent<ChuckSubInstance>());
                 c.gameObject.GetComponent<ChuckSubInstance>().BroadcastEvent("start");
             }
         }

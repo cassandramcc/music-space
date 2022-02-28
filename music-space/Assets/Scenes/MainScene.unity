@@ -2842,8 +2842,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 709c4bbac2fd2b64b965cf7ff80097f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 86107804}
-  mouseCursorUI: {fileID: 878755844}
+  vertices: []
+  triangles: 
   controller: {fileID: 673575742}
   rController: {fileID: 701219716}
   chuckControls: {fileID: 7720038260125968871, guid: 8e3d4438d407bb043b308909c0facc45,
