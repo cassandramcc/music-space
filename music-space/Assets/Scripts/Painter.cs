@@ -33,15 +33,16 @@ public class Painter : MonoBehaviour
     public GameObject controller;
     public GameObject rController;
 
-    public GameObject chuckControls;
-
     int chuckCounter = 1;
 
     List<int> mostRecentTriangles = new List<int>();
+
+    public GameObject meshHolder;
+
+    GameObject currentMesh;
     
 
     void Start() {
-        Assert.IsNotNull(chuckControls);
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         vertices = new List<Vector3>();
@@ -56,15 +57,16 @@ public class Painter : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    void DrawPoint(){
+    void CreatePoint(){
         Vector3 point = controller.transform.position;
         //To stop too many vertices spawning in the same place
         if ((lastPoint - point).magnitude > 0.01f){
             centralVertices.Add(new Vertex(point));
             mostRecentVertices.Add(new Vertex(point));
-            //DebugSpheres(point);
             numRecentVertices += 1;
+            currentMesh.GetComponent<MeshHolder>().centralVertices.Add(new MeshHolder.Vertex(point));
         }
+        
     }
 
     void CalculateVertexDirection(){
@@ -93,7 +95,6 @@ public class Painter : MonoBehaviour
         if (numRecentVertices >=3){
             Vertex start = centralVertices[centralVertices.Count - 3];
             Vertex end = centralVertices[centralVertices.Count - 2];
-            Debug.Log(start.pos);
             vertices.AddRange(start.edgeVertices);
             mostRecentEdgeVertices.AddRange(start.edgeVertices);
             vertices.AddRange(end.edgeVertices);
@@ -208,37 +209,35 @@ public class Painter : MonoBehaviour
         double[] notesForChuck = PaintToNotes(mostRecentVertices);
         //Item 1 = notes, item 2 = times
         Tuple<List<Double>, List<long>> correctedNotes = NotesToTimes(notesForChuck);
+        currentMesh.AddComponent<ChuckSynth>();
 
-        GameObject newChuck = Instantiate(chuckControls,Vector3.zero,Quaternion.identity);
-        newChuck.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
-        newChuck.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
+        currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
+        currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
 
-        newChuck.GetComponent<PaintHolder>().meshVertices = mostRecentEdgeVertices;
-        //Debug.Log("Most recent edge vertices: "+mostRecentEdgeVertices.Count);
-        newChuck.GetComponent<PaintHolder>().triangles = mostRecentTriangles;
-        //Debug.Log("Give notes to chuck");
-        newChuck.GetComponent<PaintHolder>().UpdateMesh();
         
-        ChuckSubInstance newChuckSubInstance = newChuck.GetComponent<ChuckSubInstance>();
-        //the sub instance component is for some reason disabled on instantiation
-        newChuckSubInstance.enabled = true;
+        ChuckSubInstance newChuckSubInstance = currentMesh.GetComponent<ChuckSubInstance>();
+
         //Different chuck sub instances have to have different array names for the frequencies, so this is the crude way to do it.
         newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),correctedNotes.Item1.ToArray());
         newChuckSubInstance.SetIntArray("times" + chuckCounter.ToString(),correctedNotes.Item2.ToArray());
         chuckCounter++;
 
         // ? Do the chucks still need this array?
-        newChuck.GetComponent<ChuckSynth>().noteBuffer = notesForChuck;
+        //newChuck.GetComponent<ChuckSynth>().noteBuffer = notesForChuck;
     }
 
     void Update()
     {
         Vector3 point = controller.transform.position;
 
+        if (controller.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
+            currentMesh = Instantiate(meshHolder,Vector3.zero,Quaternion.identity);
+        }
+
         if (controller.GetComponent<ActionBasedController>().activateAction.action.ReadValue<float>() > 0.8){
-            DrawPoint();
-            CalculateVertexDirection();
-            DrawTriangles();
+            CreatePoint();
+            currentMesh.GetComponent<MeshHolder>().CalculateVertexDirection();
+            currentMesh.GetComponent<MeshHolder>().DrawTriangles();
         }
 
         else if(controller.GetComponent<ActionBasedController>().activateAction.action.WasReleasedThisFrame()){
