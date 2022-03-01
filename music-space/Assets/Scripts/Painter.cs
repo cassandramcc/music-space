@@ -11,22 +11,12 @@ public class Painter : MonoBehaviour
 
     public class Vertex{
         public Vector3 pos;
-        public List<Vector3> edgeVertices = new List<Vector3>();
         public Vertex(Vector3 _pos){
             pos = _pos;
         }
-
     }
 
-    Mesh mesh;
-    public List<Vector3> vertices;
-
-    List<Vertex> centralVertices = new List<Vertex>();
-
     List<Vertex> mostRecentVertices = new List<Vertex>();
-
-    List<Vector3> mostRecentEdgeVertices = new List<Vector3>();
-    public List<int> triangles;
     int numRecentVertices;
     Vector3 lastPoint;
 
@@ -34,112 +24,20 @@ public class Painter : MonoBehaviour
     public GameObject rController;
 
     int chuckCounter = 1;
-
-    List<int> mostRecentTriangles = new List<int>();
-
     public GameObject meshHolder;
 
     GameObject currentMesh;
-    
-
-    void Start() {
-        mesh = new Mesh();
-        GetComponent<MeshFilter>().mesh = mesh;
-        vertices = new List<Vector3>();
-        triangles = new List<int>();
-        UpdateMesh();
-    }
-
-    void UpdateMesh(){
-        mesh.Clear();
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-        mesh.RecalculateNormals();
-    }
 
     void CreatePoint(){
         Vector3 point = controller.transform.position;
         //To stop too many vertices spawning in the same place
         if ((lastPoint - point).magnitude > 0.01f){
-            centralVertices.Add(new Vertex(point));
             mostRecentVertices.Add(new Vertex(point));
             numRecentVertices += 1;
             currentMesh.GetComponent<MeshHolder>().centralVertices.Add(new MeshHolder.Vertex(point));
         }
-        
     }
 
-    void CalculateVertexDirection(){
-        if (centralVertices.Count >= 2){
-            Vector3 direction = centralVertices[centralVertices.Count-1].pos - centralVertices[centralVertices.Count - 2].pos;
-            direction = direction/direction.magnitude; //normalised direction
-            Vertex lastVertex = centralVertices[centralVertices.Count - 2];
-            //this is the direction between first vertex and the next vertex
-            //the first vertex's points need to be in the perpedincular direction
-            Vector3 perpendicular = new Vector3();
-            Vector3.OrthoNormalize(ref direction,ref perpendicular);
-            Vector3 rotation = perpendicular * Mathf.Cos(Mathf.PI/2) + (Vector3.Cross(direction,perpendicular))*Mathf.Sin(Mathf.PI/2) + direction*(Vector3.Dot(perpendicular,direction))*(1-Mathf.Cos(Mathf.PI/2));
-            //the point 180 degrees away from the perp vector
-            
-            //Create points on plane defined by this perpendicular by rotating the perp vector around the direction as the axis
-            for (int i = 0; i <= 270; i+=90){
-                Vector3 rot = perpendicular * Mathf.Cos(i * Mathf.Deg2Rad) + (Vector3.Cross(direction,perpendicular))*Mathf.Sin(i * Mathf.Deg2Rad) + direction*(Vector3.Dot(perpendicular,direction))*(1-Mathf.Cos(i * Mathf.Deg2Rad));
-                Vector3 newPoint = lastVertex.pos - rot;
-                Vector3 shrinkNewPoint = Vector3.MoveTowards(newPoint,lastVertex.pos,0.9f);
-                lastVertex.edgeVertices.Add(shrinkNewPoint);
-            }
-        }
-    }
-
-    void DrawTriangles(){
-        if (numRecentVertices >=3){
-            Vertex start = centralVertices[centralVertices.Count - 3];
-            Vertex end = centralVertices[centralVertices.Count - 2];
-            vertices.AddRange(start.edgeVertices);
-            mostRecentEdgeVertices.AddRange(start.edgeVertices);
-            vertices.AddRange(end.edgeVertices);
-            mostRecentEdgeVertices.AddRange(end.edgeVertices);
-            int startVertex = vertices.Count - 8;
-            //If you want different shapes, will need to make this number changeable.
-            if (start.pos.x > end.pos.x){
-                int[] tris = new int[]{
-                    startVertex+5, startVertex,startVertex+1,
-                    startVertex,startVertex+5,startVertex+4,
-
-                    startVertex+3,startVertex,startVertex+7,
-                    startVertex+7,startVertex,startVertex+4,
-
-                    startVertex+2,startVertex+3,startVertex+6,
-                    startVertex+6,startVertex+3,startVertex+7,
-
-                    startVertex+5,startVertex+1,startVertex+2,
-                    startVertex+6,startVertex+5,startVertex+2
-                };
-                triangles.AddRange(tris); 
-                mostRecentTriangles.AddRange(tris);
-            }
-            else{
-                int[] tris = new int[]{
-                    startVertex, startVertex+1,startVertex+5,
-                    startVertex,startVertex+5,startVertex+4,
-
-                    startVertex,startVertex+7,startVertex+3,
-                    startVertex,startVertex+4,startVertex+7,
-
-                    startVertex+3,startVertex+6,startVertex+2,
-                    startVertex+3,startVertex+7,startVertex+6,
-
-                    startVertex+1,startVertex+2,startVertex+5,
-                    startVertex+5,startVertex+2,startVertex+6
-                };
-                triangles.AddRange(tris);
-                mostRecentTriangles.AddRange(tris);
-            }
-            
-            //draw triangles between last vertex and last last vertex.
-            UpdateMesh();
-        }
-    }
 
     //The range are the values the notes are allowed to have
     //Turning the range of vertex heights into notes
@@ -167,6 +65,7 @@ public class Painter : MonoBehaviour
             rangeNotes.AddRange(baseNotes.Select(n => n + i*12));
         }
 
+        //Converting each vertex into a note based on y value
         List<int> noteBuffer = new List<int>();
         foreach(Vertex v in vertices){   
             noteBuffer.Add(VertexToNote(v,rangeNotes));
@@ -188,6 +87,7 @@ public class Painter : MonoBehaviour
         double prevNote = notes[0];
         long time = 100;
         int scale = 100;
+        //Counting the number of repeat digits in a row in the notes list
         foreach(double n in notes){
             if (prevNote == n){
                 time = time+scale;
@@ -209,21 +109,17 @@ public class Painter : MonoBehaviour
         double[] notesForChuck = PaintToNotes(mostRecentVertices);
         //Item 1 = notes, item 2 = times
         Tuple<List<Double>, List<long>> correctedNotes = NotesToTimes(notesForChuck);
-        currentMesh.AddComponent<ChuckSynth>();
 
+        currentMesh.AddComponent<ChuckSynth>();
         currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
         currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
 
-        
         ChuckSubInstance newChuckSubInstance = currentMesh.GetComponent<ChuckSubInstance>();
 
         //Different chuck sub instances have to have different array names for the frequencies, so this is the crude way to do it.
         newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),correctedNotes.Item1.ToArray());
         newChuckSubInstance.SetIntArray("times" + chuckCounter.ToString(),correctedNotes.Item2.ToArray());
         chuckCounter++;
-
-        // ? Do the chucks still need this array?
-        //newChuck.GetComponent<ChuckSynth>().noteBuffer = notesForChuck;
     }
 
     void Update()
@@ -244,8 +140,7 @@ public class Painter : MonoBehaviour
             numRecentVertices = 0;
             GiveNotesToChuck();
             mostRecentVertices.Clear();
-            mostRecentTriangles.Clear();
-            mostRecentEdgeVertices.Clear();
+            currentMesh = null;
         }
 
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
