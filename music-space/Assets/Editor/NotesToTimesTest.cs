@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using System;
 
-public class NewTestScript
+public class NotesToTimesTest
 {
     // A Test behaves as an ordinary method
     [Test]

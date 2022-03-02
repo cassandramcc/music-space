@@ -28,6 +28,8 @@ public class Painter : MonoBehaviour
 
     GameObject currentMesh;
 
+    public GameObject chuckSubParent;
+
     void CreatePoint(){
         Vector3 point = controller.transform.position;
         //To stop too many vertices spawning in the same place
@@ -113,13 +115,41 @@ public class Painter : MonoBehaviour
         currentMesh.AddComponent<ChuckSynth>();
         currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
         currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
+        currentMesh.GetComponent<ChuckSynth>().waitTime = "wait" + chuckCounter.ToString();
+
+        float waitDistance;
+        if (currentMesh.GetComponent<MeshHolder>().closestMesh == null){
+            waitDistance = 0;
+        }
+        else{
+            //Mapping distance into 100ms
+            waitDistance = Vector3.Distance(currentMesh.GetComponent<MeshHolder>().startPoint,currentMesh.GetComponent<MeshHolder>().closestMesh.GetComponent<MeshHolder>().startPoint);
+            waitDistance = Mathf.Floor((waitDistance*1000)/100)*100 + currentMesh.GetComponent<MeshHolder>().closestMesh.GetComponent<MeshHolder>().waitTime;
+        }
+        
+        currentMesh.GetComponent<MeshHolder>().waitTime = (int)waitDistance;
 
         ChuckSubInstance newChuckSubInstance = currentMesh.GetComponent<ChuckSubInstance>();
 
         //Different chuck sub instances have to have different array names for the frequencies, so this is the crude way to do it.
         newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),correctedNotes.Item1.ToArray());
         newChuckSubInstance.SetIntArray("times" + chuckCounter.ToString(),correctedNotes.Item2.ToArray());
+        newChuckSubInstance.SetInt("wait" + chuckCounter.ToString(),currentMesh.GetComponent<MeshHolder>().waitTime);
         chuckCounter++;
+    }
+
+    void FindClosestOtherMesh(){
+        ChuckSynth[] meshes = GameObject.FindObjectsOfType<ChuckSynth>();
+        GameObject closest = null;
+        float prevDistance = Mathf.Infinity;
+        foreach(ChuckSynth chuck in meshes){
+            float currDistance = Vector3.Distance(chuck.gameObject.GetComponent<MeshHolder>().startPoint,currentMesh.GetComponent<MeshHolder>().startPoint);
+            if (chuck.gameObject != currentMesh && currDistance < prevDistance){
+                prevDistance = currDistance;
+                closest = chuck.gameObject;
+            }
+        }
+        currentMesh.GetComponent<MeshHolder>().closestMesh = closest;
     }
 
     void Update()
@@ -127,7 +157,10 @@ public class Painter : MonoBehaviour
         Vector3 point = controller.transform.position;
 
         if (controller.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
-            currentMesh = Instantiate(meshHolder,Vector3.zero,Quaternion.identity);
+            currentMesh = Instantiate(meshHolder,point,Quaternion.identity);
+            currentMesh.transform.parent = chuckSubParent.transform;
+            currentMesh.GetComponent<MeshHolder>().startPoint = point;
+            FindClosestOtherMesh();
         }
 
         if (controller.GetComponent<ActionBasedController>().activateAction.action.ReadValue<float>() > 0.8){
@@ -144,13 +177,9 @@ public class Painter : MonoBehaviour
         }
 
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
-            ChuckSynth[] chucks = GameObject.FindObjectsOfType<ChuckSynth>();
-            //Perhaps put all chucks into one parent and call on children at once? Possible faster?
-
-            foreach(ChuckSynth c in chucks){
-                c.gameObject.GetComponent<ChuckSubInstance>().BroadcastEvent("start");
-            }
+            chuckSubParent.BroadcastMessage("PlayChuck");
         }
+
         lastPoint = point;
     }
 

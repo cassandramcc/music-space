@@ -19,6 +19,11 @@ public class MeshHolder : MonoBehaviour
 
     public List<Vertex> centralVertices = new List<Vertex>();
 
+    public Vector3 startPoint;
+
+    public GameObject closestMesh;
+
+    public int waitTime;
 
     void UpdateMesh(){
         mesh.Clear();
@@ -44,8 +49,8 @@ public class MeshHolder : MonoBehaviour
             for (int i = 0; i <= 270; i+=90){
                 Vector3 rot = perpendicular * Mathf.Cos(i * Mathf.Deg2Rad) + (Vector3.Cross(direction,perpendicular))*Mathf.Sin(i * Mathf.Deg2Rad) + direction*(Vector3.Dot(perpendicular,direction))*(1-Mathf.Cos(i * Mathf.Deg2Rad));
                 Vector3 newPoint = lastVertex.pos - rot;
-                Vector3 shrinkNewPoint = Vector3.MoveTowards(newPoint,lastVertex.pos,0.9f);
-                lastVertex.edgeVertices.Add(shrinkNewPoint);
+                Vector3 shrinkNewPoint = Vector3.MoveTowards(newPoint,lastVertex.pos,0.95f);
+                lastVertex.edgeVertices.Add(shrinkNewPoint - startPoint);
             }
         }
     }
