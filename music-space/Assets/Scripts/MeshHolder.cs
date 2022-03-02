@@ -31,7 +31,6 @@ public class MeshHolder : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
     }
-    // Start is called before the first frame update
 
     public void CalculateVertexDirection(){
         if (centralVertices.Count >= 2){

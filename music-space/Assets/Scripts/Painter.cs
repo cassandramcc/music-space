@@ -56,16 +56,21 @@ public class Painter : MonoBehaviour
         return output+48;
     }
 
-    double[] PaintToNotes(List<Vertex> vertices){
-        // ! Will need to make this variable
-        Scale scale = new Scale(Root.FMajor);
-        
-        //Generating the base notes for the vertices
+    //Generating the base notes for the vertices
+    List<int> GenerateAllNotesFromBase(Scale scale){
         IEnumerable<int> baseNotes = scale.notes;
         List<int> rangeNotes = new List<int>();
         for (int i = 0; i < 4; i++){
             rangeNotes.AddRange(baseNotes.Select(n => n + i*12));
         }
+        return rangeNotes;
+    }
+
+    double[] PaintToNotes(List<Vertex> vertices){
+        // ! Will need to make this variable
+        Scale scale = new Scale(Root.FMajor);
+        
+        List<int> rangeNotes = GenerateAllNotesFromBase(scale);
 
         //Converting each vertex into a note based on y value
         List<int> noteBuffer = new List<int>();
@@ -155,20 +160,24 @@ public class Painter : MonoBehaviour
     void Update()
     {
         Vector3 point = controller.transform.position;
-
+        
+        //Create a new sub chuck to hold the new mesh
         if (controller.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
             currentMesh = Instantiate(meshHolder,point,Quaternion.identity);
             currentMesh.transform.parent = chuckSubParent.transform;
+            //new sub chuck needs to hold its starting point to find closest other sub chuck
             currentMesh.GetComponent<MeshHolder>().startPoint = point;
             FindClosestOtherMesh();
         }
 
+        //Create a central that will get turned into a note, point is also given to new sub chuck to create shape around for mesh vertices
         if (controller.GetComponent<ActionBasedController>().activateAction.action.ReadValue<float>() > 0.8){
             CreatePoint();
             currentMesh.GetComponent<MeshHolder>().CalculateVertexDirection();
             currentMesh.GetComponent<MeshHolder>().DrawTriangles();
         }
 
+        //Clear variables and give notes to chuck
         else if(controller.GetComponent<ActionBasedController>().activateAction.action.WasReleasedThisFrame()){
             numRecentVertices = 0;
             GiveNotesToChuck();
@@ -179,12 +188,8 @@ public class Painter : MonoBehaviour
         if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
             chuckSubParent.BroadcastMessage("PlayChuck");
         }
-
         lastPoint = point;
     }
-
-
-
 
     void DebugSpheres(Vector3 point){
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
