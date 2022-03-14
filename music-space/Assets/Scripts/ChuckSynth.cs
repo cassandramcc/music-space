@@ -59,7 +59,6 @@ public class ChuckSynth : MonoBehaviour
     }
 
     void Update(){
-        Debug.Log(positionSyncer.GetCurrentValue());
         pointer.transform.position = GetComponent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
     }
 }
