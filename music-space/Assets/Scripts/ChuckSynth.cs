@@ -9,10 +9,15 @@ public class ChuckSynth : MonoBehaviour
     public string freqArrayName;
     public string timeArray;
     public string waitTime;
-    // Start is called before the first frame update
+
+    public string pointerPos;
+    ChuckIntSyncer positionSyncer;
+
+    GameObject pointer;
     void Start(){
         
         GetComponent<ChuckSubInstance>().RunCode(string.Format(@"
+            global int {3};
             fun void playNotes(float fs[], int times[], int wait){{
                 TriOsc t => ADSR env1 => NRev rev1 =>  dac;
                 env1 => Delay delay1 => dac;
@@ -29,20 +34,32 @@ public class ChuckSynth : MonoBehaviour
                     Std.mtof(fs[i]) => t.freq;
                     1 => env1.keyOn;
                     times[i]::ms => now;
+                    {3}+ times[i]/100 => {3};
                 }}
+                0 => {3};
             }}
             global float {0}[1000];
             global int {1}[1000];
             global Event start;
             global int {2};
+
             while (true) {{
                 start => now;
                 spork ~ playNotes({0},{1},{2});
             }}
-        ",freqArrayName,timeArray,waitTime));
+        ",freqArrayName,timeArray,waitTime,pointerPos));
+
+        positionSyncer = gameObject.AddComponent<ChuckIntSyncer>();
+		positionSyncer.SyncInt( GetComponent<ChuckSubInstance>(), pointerPos );
+        pointer = Instantiate(GetComponent<MeshHolder>().pointer);
     }
 
     public void PlayChuck(){
         GetComponent<ChuckSubInstance>().BroadcastEvent("start");
+    }
+
+    void Update(){
+        Debug.Log(positionSyncer.GetCurrentValue());
+        pointer.transform.position = GetComponent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
     }
 }

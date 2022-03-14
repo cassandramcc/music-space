@@ -209,3 +209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vertices: []
   triangles: 
+  startPoint: {x: 0, y: 0, z: 0}
+  closestMesh: {fileID: 0}
+  waitTime: 0
+  pointer: {fileID: 327470602155118144, guid: e971fa81a9d93de4d8602b6266cf4a95, type: 3}

@@ -25,6 +25,8 @@ public class MeshHolder : MonoBehaviour
 
     public int waitTime;
 
+    public GameObject pointer;
+
     void UpdateMesh(){
         mesh.Clear();
         mesh.vertices = vertices.ToArray();

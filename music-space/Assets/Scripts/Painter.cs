@@ -121,6 +121,7 @@ public class Painter : MonoBehaviour
         currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
         currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
         currentMesh.GetComponent<ChuckSynth>().waitTime = "wait" + chuckCounter.ToString();
+        currentMesh.GetComponent<ChuckSynth>().pointerPos = "pos" + chuckCounter.ToString();
 
         float waitDistance;
         if (currentMesh.GetComponent<MeshHolder>().closestMesh == null){
