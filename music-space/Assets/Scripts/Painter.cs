@@ -15,20 +15,17 @@ public class Painter : MonoBehaviour
             pos = _pos;
         }
     }
-
     List<Vertex> mostRecentVertices = new List<Vertex>();
     int numRecentVertices;
     Vector3 lastPoint;
-
     public GameObject controller;
     public GameObject rController;
-
     int chuckCounter = 1;
     public GameObject meshHolder;
-
     GameObject currentMesh;
-
     public GameObject chuckSubParent;
+
+    public Material paintColour;
 
     void CreatePoint(){
         Vector3 point = controller.transform.position;
@@ -165,6 +162,7 @@ public class Painter : MonoBehaviour
         //Create a new sub chuck to hold the new mesh
         if (controller.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
             currentMesh = Instantiate(meshHolder,point,Quaternion.identity);
+            currentMesh.GetComponent<MeshHolder>().paintColour = paintColour;
             currentMesh.transform.parent = chuckSubParent.transform;
             //new sub chuck needs to hold its starting point to find closest other sub chuck
             currentMesh.GetComponent<MeshHolder>().startPoint = point;

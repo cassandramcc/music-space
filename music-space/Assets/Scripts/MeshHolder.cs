@@ -27,6 +27,8 @@ public class MeshHolder : MonoBehaviour
 
     public GameObject pointer;
 
+    public Material paintColour;
+
     void UpdateMesh(){
         mesh.Clear();
         mesh.vertices = vertices.ToArray();
@@ -105,6 +107,7 @@ public class MeshHolder : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        GetComponent<MeshRenderer>().material = paintColour;
         vertices = new List<Vector3>();
         triangles = new List<int>();
         UpdateMesh();
