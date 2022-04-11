@@ -26,6 +26,7 @@ public class Painter : MonoBehaviour
     public GameObject chuckSubParent;
 
     public Material paintColour;
+    public string instrument;
 
     void CreatePoint(){
         Vector3 point = controller.transform.position;
@@ -114,11 +115,12 @@ public class Painter : MonoBehaviour
         //Item 1 = notes, item 2 = times
         Tuple<List<Double>, List<long>> correctedNotes = NotesToTimes(notesForChuck);
 
-        currentMesh.AddComponent<ChuckSynth>();
-        currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
-        currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
-        currentMesh.GetComponent<ChuckSynth>().waitTime = "wait" + chuckCounter.ToString();
-        currentMesh.GetComponent<ChuckSynth>().pointerPos = "pos" + chuckCounter.ToString();
+
+        currentMesh.AddComponent<ChuckSynthPiano>();
+        currentMesh.GetComponent<ChuckSynthPiano>().freqArrayName = "freqs" + chuckCounter.ToString();
+        currentMesh.GetComponent<ChuckSynthPiano>().timeArray = "times" + chuckCounter.ToString();
+        currentMesh.GetComponent<ChuckSynthPiano>().waitTime = "wait" + chuckCounter.ToString();
+        currentMesh.GetComponent<ChuckSynthPiano>().pointerPos = "pos" + chuckCounter.ToString();
 
         float waitDistance;
         if (currentMesh.GetComponent<MeshHolder>().closestMesh == null){
