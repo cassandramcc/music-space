@@ -115,12 +115,21 @@ public class Painter : MonoBehaviour
         //Item 1 = notes, item 2 = times
         Tuple<List<Double>, List<long>> correctedNotes = NotesToTimes(notesForChuck);
 
-
-        currentMesh.AddComponent<ChuckSynthPiano>();
-        currentMesh.GetComponent<ChuckSynthPiano>().freqArrayName = "freqs" + chuckCounter.ToString();
-        currentMesh.GetComponent<ChuckSynthPiano>().timeArray = "times" + chuckCounter.ToString();
-        currentMesh.GetComponent<ChuckSynthPiano>().waitTime = "wait" + chuckCounter.ToString();
-        currentMesh.GetComponent<ChuckSynthPiano>().pointerPos = "pos" + chuckCounter.ToString();
+        if (paintColour.name == "Red Paint"){
+            currentMesh.AddComponent<ChuckSynthPiano>();
+            currentMesh.GetComponent<ChuckSynthPiano>().freqArrayName = "freqs" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynthPiano>().timeArray = "times" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynthPiano>().waitTime = "wait" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynthPiano>().pointerPos = "pos" + chuckCounter.ToString();
+        }
+        else{
+            currentMesh.AddComponent<ChuckSynth>();
+            currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynth>().waitTime = "wait" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynth>().pointerPos = "pos" + chuckCounter.ToString();
+        }
+        
 
         float waitDistance;
         if (currentMesh.GetComponent<MeshHolder>().closestMesh == null){
