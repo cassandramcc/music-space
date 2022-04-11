@@ -122,6 +122,13 @@ public class Painter : MonoBehaviour
             currentMesh.GetComponent<ChuckSynthPiano>().waitTime = "wait" + chuckCounter.ToString();
             currentMesh.GetComponent<ChuckSynthPiano>().pointerPos = "pos" + chuckCounter.ToString();
         }
+        else if (paintColour.name == "Blue Paint"){
+            currentMesh.AddComponent<ChuckSynthBrass>();
+            currentMesh.GetComponent<ChuckSynthBrass>().freqArrayName = "freqs" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynthBrass>().timeArray = "times" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynthBrass>().waitTime = "wait" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynthBrass>().pointerPos = "pos" + chuckCounter.ToString();
+        }
         else{
             currentMesh.AddComponent<ChuckSynth>();
             currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
