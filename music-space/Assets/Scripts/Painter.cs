@@ -160,10 +160,10 @@ public class Painter : MonoBehaviour
     }
 
     void FindClosestOtherMesh(){
-        ChuckSynth[] meshes = GameObject.FindObjectsOfType<ChuckSynth>();
+        MeshHolder[] meshes = GameObject.FindObjectsOfType<MeshHolder>();
         GameObject closest = null;
         float prevDistance = Mathf.Infinity;
-        foreach(ChuckSynth chuck in meshes){
+        foreach(MeshHolder chuck in meshes){
             float currDistance = Vector3.Distance(chuck.gameObject.GetComponent<MeshHolder>().startPoint,currentMesh.GetComponent<MeshHolder>().startPoint);
             if (chuck.gameObject != currentMesh && currDistance < prevDistance){
                 prevDistance = currDistance;
