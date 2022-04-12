@@ -28,6 +28,8 @@ public class Painter : MonoBehaviour
     public Material paintColour;
     public string instrument;
 
+    public Root currentScale = Root.CMajor;
+
     void CreatePoint(){
         Vector3 point = controller.transform.position;
         //To stop too many vertices spawning in the same place
@@ -66,7 +68,8 @@ public class Painter : MonoBehaviour
 
     double[] PaintToNotes(List<Vertex> vertices){
         // ! Will need to make this variable
-        Scale scale = new Scale(Root.FMajor);
+        //Scale scale = new Scale(Root.FMajor);
+        Scale scale = new Scale(currentScale);
         
         List<int> rangeNotes = GenerateAllNotesFromBase(scale);
 
