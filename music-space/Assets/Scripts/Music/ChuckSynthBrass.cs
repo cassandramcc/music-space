@@ -12,12 +12,18 @@ public class ChuckSynthBrass : MonoBehaviour
 
     public string pointerPos;
     ChuckIntSyncer positionSyncer;
+    //Need to know when to instantiate the pointer
+    public string createPointer;
+    ChuckIntSyncer createPointerSyncer;
+    bool doCreatePointer;
 
     GameObject pointer;
     void Start(){
         
         GetComponent<ChuckSubInstance>().RunCode(string.Format(@"
             global int {3};
+            global int {4};
+            0 => {4};
             fun void playNotes(float fs[], int times[], int wait){{
                 SawOsc saw1  => LPF f1 => ADSR env1=> dac;
                 SqrOsc saw2 => LPF f2 => ADSR env2=> dac;
@@ -32,6 +38,7 @@ public class ChuckSynthBrass : MonoBehaviour
                 (15::ms,300::ms,-2.7,200::ms) => env1.set;
                 (15::ms,300::ms,-2.7,200::ms) => env2.set;
                 wait::ms => now;
+                1 => {4};
                 for (0 => int i; i < fs.cap(); i++){{
                     Std.mtof(fs[i]) => saw2.freq => saw1.freq;
                     1 => env1.keyOn;
@@ -40,6 +47,7 @@ public class ChuckSynthBrass : MonoBehaviour
                     {3}+ times[i]/100 => {3};
                 }}
                 0 => {3};
+                0 => {4};
             }}
             global float {0}[1000];
             global int {1}[1000];
@@ -50,19 +58,38 @@ public class ChuckSynthBrass : MonoBehaviour
                 start => now;
                 spork ~ playNotes({0},{1},{2});
             }}
-        ",freqArrayName,timeArray,waitTime,pointerPos));
+        ", freqArrayName,timeArray,waitTime,pointerPos, createPointer));
 
         positionSyncer = gameObject.AddComponent<ChuckIntSyncer>();
-		positionSyncer.SyncInt( GetComponent<ChuckSubInstance>(), pointerPos );
-        pointer = Instantiate(GetComponent<MeshHolder>().pointer);
-        pointer.transform.parent = transform;
+        createPointerSyncer = gameObject.AddComponent<ChuckIntSyncer>();
+        positionSyncer.SyncInt(GetComponent<ChuckSubInstance>(), pointerPos);
+        createPointerSyncer.SyncInt(GetComponent<ChuckSubInstance>(), createPointer);
     }
 
     public void PlayChuck(){
         GetComponent<ChuckSubInstance>().BroadcastEvent("start");
+        doCreatePointer = true;
+
     }
 
-    void Update(){
-        pointer.transform.position = GetComponent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
+    void Update()
+    {
+        if (doCreatePointer && createPointerSyncer.GetCurrentValue() > 0)
+        {
+            pointer = Instantiate(GetComponent<MeshHolder>().pointer);
+            pointer.transform.parent = transform;
+            pointer.transform.position = GetComponent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
+            doCreatePointer = false;
+        }
+
+        if (!doCreatePointer && createPointerSyncer.GetCurrentValue() > 0)
+        {
+            pointer.transform.position = GetComponent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
+        }
+
+        if (!doCreatePointer && createPointerSyncer.GetCurrentValue() == 0)
+        {
+            Destroy(pointer);
+        }
     }
 }

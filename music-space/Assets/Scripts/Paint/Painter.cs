@@ -124,6 +124,7 @@ public class Painter : MonoBehaviour
             currentMesh.GetComponent<ChuckSynthPiano>().timeArray = "times" + chuckCounter.ToString();
             currentMesh.GetComponent<ChuckSynthPiano>().waitTime = "wait" + chuckCounter.ToString();
             currentMesh.GetComponent<ChuckSynthPiano>().pointerPos = "pos" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynthPiano>().createPointer = "createPointer" + chuckCounter.ToString();
         }
         else if (paintColour.name == "Blue Paint"){
             currentMesh.AddComponent<ChuckSynthBrass>();
@@ -131,8 +132,10 @@ public class Painter : MonoBehaviour
             currentMesh.GetComponent<ChuckSynthBrass>().timeArray = "times" + chuckCounter.ToString();
             currentMesh.GetComponent<ChuckSynthBrass>().waitTime = "wait" + chuckCounter.ToString();
             currentMesh.GetComponent<ChuckSynthBrass>().pointerPos = "pos" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynthBrass>().createPointer = "createPointer" + chuckCounter.ToString();
         }
-        else{
+        else
+        {
             currentMesh.AddComponent<ChuckSynth>();
             currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
             currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
