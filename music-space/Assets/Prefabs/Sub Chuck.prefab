@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7720038260125968871
+--- !u!1 &2287099881796592504
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,40 +8,37 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7720038260125968867}
-  - component: {fileID: 7720038260125968866}
-  - component: {fileID: 7720038260125968865}
-  - component: {fileID: 5903504579163652547}
-  - component: {fileID: 7203339549206274060}
-  - component: {fileID: -1977082404913727188}
+  - component: {fileID: 2216497682157521442}
+  - component: {fileID: 4339665630509133970}
+  - component: {fileID: 251216653203562304}
   m_Layer: 0
-  m_Name: Sub Chuck
+  m_Name: Audio Offset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7720038260125968867
+--- !u!4 &2216497682157521442
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7720038260125968871}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_GameObject: {fileID: 2287099881796592504}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 7720038260125968867}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!82 &7720038260125968866
+--- !u!82 &4339665630509133970
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7720038260125968871}
+  m_GameObject: {fileID: 2287099881796592504}
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
@@ -131,13 +128,13 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &7720038260125968865
+--- !u!114 &251216653203562304
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7720038260125968871}
+  m_GameObject: {fileID: 2287099881796592504}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b409d6d9706b41988cd9e32bd055751, type: 3}
@@ -146,6 +143,40 @@ MonoBehaviour:
   chuckMainInstance: {fileID: 0}
   spatialize: 1
   persistToNextScene: 0
+--- !u!1 &7720038260125968871
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7720038260125968867}
+  - component: {fileID: 5903504579163652547}
+  - component: {fileID: 7203339549206274060}
+  - component: {fileID: -1977082404913727188}
+  m_Layer: 0
+  m_Name: Sub Chuck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7720038260125968867
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7720038260125968871}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2216497682157521442}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5903504579163652547
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -213,3 +244,4 @@ MonoBehaviour:
   closestMesh: {fileID: 0}
   waitTime: 0
   pointer: {fileID: 327470602155118144, guid: e971fa81a9d93de4d8602b6266cf4a95, type: 3}
+  paintColour: {fileID: 0}

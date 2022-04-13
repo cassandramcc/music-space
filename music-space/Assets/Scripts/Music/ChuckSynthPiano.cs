@@ -37,7 +37,7 @@ public class ChuckSynthPiano : MonoBehaviour
                     Std.mtof(fs[i]) => t.freq;
                     1 => env1.keyOn;
                     times[i]::ms => now;
-                    {3}+ times[i]/100 => {3};
+                    {3}+ times[i]/50 => {3};
                 }}
                 0 => {3};
                 0 => {4};
@@ -69,15 +69,16 @@ public class ChuckSynthPiano : MonoBehaviour
     {
         if (doCreatePointer && createPointerSyncer.GetCurrentValue() > 0)
         {
-            pointer = Instantiate(GetComponent<MeshHolder>().pointer);
+            pointer = Instantiate(GetComponentInParent<MeshHolder>().pointer);
             pointer.transform.parent = transform;
-            pointer.transform.position = GetComponent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
+            pointer.transform.position = GetComponentInParent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
             doCreatePointer = false;
         }
 
         if (!doCreatePointer && createPointerSyncer.GetCurrentValue() > 0)
         {
-            pointer.transform.position = GetComponent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
+            pointer.transform.position = GetComponentInParent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
+            transform.position = GetComponentInParent<MeshHolder>().centralVertices[positionSyncer.GetCurrentValue()].pos;
         }
 
         if (!doCreatePointer && createPointerSyncer.GetCurrentValue() == 0)

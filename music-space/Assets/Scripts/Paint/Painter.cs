@@ -33,7 +33,7 @@ public class Painter : MonoBehaviour
     void CreatePoint(){
         Vector3 point = controller.transform.position;
         //To stop too many vertices spawning in the same place
-        if ((lastPoint - point).magnitude > 0.01f){
+        if ((lastPoint - point).magnitude > 0.001f){
             mostRecentVertices.Add(new Vertex(point));
             numRecentVertices += 1;
             currentMesh.GetComponent<MeshHolder>().centralVertices.Add(new MeshHolder.Vertex(point));
@@ -93,8 +93,8 @@ public class Painter : MonoBehaviour
         //Because chuck wants ints to be longs
         List<long> times = new List<long>();
         double prevNote = notes[0];
-        long time = 100;
-        int scale = 100;
+        long time = 50;
+        int scale = 50;
         //Counting the number of repeat digits in a row in the notes list
         foreach(double n in notes){
             if (prevNote == n){
@@ -104,12 +104,12 @@ public class Painter : MonoBehaviour
                 newNotes.Add(prevNote);
                 prevNote = n;
                 times.Add(time);
-                time = 100;
+                time = 50;
             }
         }
         newNotes.Add(notes[notes.Count()-1]);
         times.Add(time);
-        times[0] -= 100; 
+        times[0] -= 50; 
         return new Tuple<List<Double>, List<long>>(newNotes,times);
     }
 
@@ -119,29 +119,32 @@ public class Painter : MonoBehaviour
         Tuple<List<Double>, List<long>> correctedNotes = NotesToTimes(notesForChuck);
 
         if (paintColour.name == "Red Paint"){
-            currentMesh.AddComponent<ChuckSynthPiano>();
-            currentMesh.GetComponent<ChuckSynthPiano>().freqArrayName = "freqs" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynthPiano>().timeArray = "times" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynthPiano>().waitTime = "wait" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynthPiano>().pointerPos = "pos" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynthPiano>().createPointer = "createPointer" + chuckCounter.ToString();
+            GameObject currentMeshChild = currentMesh.transform.GetChild(0).gameObject;
+            currentMeshChild.AddComponent<ChuckSynthPiano>();
+            currentMeshChild.GetComponent<ChuckSynthPiano>().freqArrayName = "freqs" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthPiano>().timeArray = "times" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthPiano>().waitTime = "wait" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthPiano>().pointerPos = "pos" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthPiano>().createPointer = "createPointer" + chuckCounter.ToString();
         }
         else if (paintColour.name == "Blue Paint"){
-            currentMesh.AddComponent<ChuckSynthBrass>();
-            currentMesh.GetComponent<ChuckSynthBrass>().freqArrayName = "freqs" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynthBrass>().timeArray = "times" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynthBrass>().waitTime = "wait" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynthBrass>().pointerPos = "pos" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynthBrass>().createPointer = "createPointer" + chuckCounter.ToString();
+            GameObject currentMeshChild = currentMesh.transform.GetChild(0).gameObject;
+            currentMeshChild.AddComponent<ChuckSynthBrass>();
+            currentMeshChild.GetComponent<ChuckSynthBrass>().freqArrayName = "freqs" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthBrass>().timeArray = "times" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthBrass>().waitTime = "wait" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthBrass>().pointerPos = "pos" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthBrass>().createPointer = "createPointer" + chuckCounter.ToString();
         }
         else
         {
-            currentMesh.AddComponent<ChuckSynth>();
-            currentMesh.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynth>().waitTime = "wait" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynth>().pointerPos = "pos" + chuckCounter.ToString();
-            currentMesh.GetComponent<ChuckSynth>().createPointer = "createPointer" + chuckCounter.ToString();
+            GameObject currentMeshChild = currentMesh.transform.GetChild(0).gameObject;
+            currentMeshChild.AddComponent<ChuckSynth>();
+            currentMeshChild.GetComponent<ChuckSynth>().freqArrayName = "freqs" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynth>().waitTime = "wait" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynth>().pointerPos = "pos" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynth>().createPointer = "createPointer" + chuckCounter.ToString();
         }
         
 
@@ -157,7 +160,7 @@ public class Painter : MonoBehaviour
         
         currentMesh.GetComponent<MeshHolder>().waitTime = (int)waitDistance;
 
-        ChuckSubInstance newChuckSubInstance = currentMesh.GetComponent<ChuckSubInstance>();
+        ChuckSubInstance newChuckSubInstance = currentMesh.transform.GetChild(0).GetComponent<ChuckSubInstance>();
 
         //Different chuck sub instances have to have different array names for the frequencies, so this is the crude way to do it.
         newChuckSubInstance.SetFloatArray("freqs" + chuckCounter.ToString(),correctedNotes.Item1.ToArray());
