@@ -45,7 +45,7 @@ public class Painter : MonoBehaviour
     //Turning the range of vertex heights into notes
     int VertexToNote(Vertex v, List<int> range){
         //output start, output end, input start, input end
-        int output = (int)Mathf.Lerp (range[0], range[range.Count - 1], Mathf.InverseLerp (0, 1f, v.pos.y));
+        int output = (int)Mathf.Lerp (range[0], range[range.Count - 1], Mathf.InverseLerp (0.4f, 2.5f, v.pos.y));
 
         //If note from lerp inverselerp is not in range, just minus 1 to get a correct note.
         if (!range.Contains(output)){
@@ -138,6 +138,7 @@ public class Painter : MonoBehaviour
             currentMesh.GetComponent<ChuckSynth>().timeArray = "times" + chuckCounter.ToString();
             currentMesh.GetComponent<ChuckSynth>().waitTime = "wait" + chuckCounter.ToString();
             currentMesh.GetComponent<ChuckSynth>().pointerPos = "pos" + chuckCounter.ToString();
+            currentMesh.GetComponent<ChuckSynth>().createPointer = "createPointer" + chuckCounter.ToString();
         }
         
 
