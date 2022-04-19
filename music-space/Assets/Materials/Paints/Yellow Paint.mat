@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Purple Paint
+  m_Name: Yellow Paint
   m_Shader: {fileID: -6465566751694194690, guid: e639505768e91f141b7bb8575175774b,
     type: 3}
   m_ShaderKeywords: 
@@ -81,7 +81,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_09d08fa592c14b798e2a91c547f7a493: 118.1
+    - Vector1_09d08fa592c14b798e2a91c547f7a493: 76.58
     - Vector1_7fb24984925d420bbe26765d9827d465: 1.7
     - _AlphaClip: 0
     - _Blend: 0
@@ -110,8 +110,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_965c5e52a0cc4fb691548b6aa5d7d6fc: {r: 0.03596698, g: 0, b: 0.5754717,
-        a: 0}
+    - Color_965c5e52a0cc4fb691548b6aa5d7d6fc: {r: 0.5764706, g: 0.5697478, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

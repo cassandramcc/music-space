@@ -547,7 +547,6 @@ Transform:
   - {fileID: 432231528}
   - {fileID: 702337701}
   - {fileID: 272728787}
-  - {fileID: 701761622}
   - {fileID: 1934332368}
   m_Father: {fileID: 2003383302}
   m_RootOrder: 3
@@ -2315,121 +2314,6 @@ MonoBehaviour:
     m_Reference: {fileID: 875253871413052681, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   m_ButtonPressPoint: 0.5
---- !u!1001 &701761621
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 176766578}
-    m_Modifications:
-    - target: {fileID: 1963225386146770357, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_Materials.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770357, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: f590591651295c14d85f61c9cb0e8d11, type: 2}
-    - target: {fileID: 1963225386146770357, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_Materials.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: f590591651295c14d85f61c9cb0e8d11, type: 2}
-    - target: {fileID: 1963225386146770359, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_Name
-      value: Pink Paint
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770362, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: paintColour
-      value: 
-      objectReference: {fileID: 2100000, guid: f590591651295c14d85f61c9cb0e8d11, type: 2}
-    - target: {fileID: 1963225386146770362, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: paintHolder
-      value: 
-      objectReference: {fileID: 1683390121}
-    - target: {fileID: 1963225386146770362, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: controllers.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770362, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: controllers.Array.data[0]
-      value: 
-      objectReference: {fileID: 120318290}
-    - target: {fileID: 1963225386146770362, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: controllers.Array.data[1]
-      value: 
-      objectReference: {fileID: 1976769002}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.70710677
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
-      objectReference: {fileID: 0}
-    - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 7c6889b7633ba86489a88f84afd29cf8, type: 3}
---- !u!4 &701761622 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
-    type: 3}
-  m_PrefabInstance: {fileID: 701761621}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &702337701 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
@@ -2757,7 +2641,7 @@ PrefabInstance:
     - target: {fileID: 1963225386146770359, guid: 7c6889b7633ba86489a88f84afd29cf8,
         type: 3}
       propertyPath: m_Name
-      value: Purple Paint
+      value: Yellow Paint
       objectReference: {fileID: 0}
     - target: {fileID: 1963225386146770362, guid: 7c6889b7633ba86489a88f84afd29cf8,
         type: 3}
@@ -3344,7 +3228,7 @@ PrefabInstance:
     - target: {fileID: 6598815579406187037, guid: 9f5a24a380916d14db9775daab4fe333,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f5a24a380916d14db9775daab4fe333, type: 3}
@@ -4267,7 +4151,7 @@ PrefabInstance:
     - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1963225386146770363, guid: 7c6889b7633ba86489a88f84afd29cf8,
         type: 3}

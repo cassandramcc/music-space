@@ -129,6 +129,15 @@ public class Painter : MonoBehaviour
         }
         else if (paintColour.name == "Blue Paint"){
             GameObject currentMeshChild = currentMesh.transform.GetChild(0).gameObject;
+            currentMeshChild.AddComponent<ChuckSynthBass>();
+            currentMeshChild.GetComponent<ChuckSynthBass>().freqArrayName = "freqs" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthBass>().timeArray = "times" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthBass>().waitTime = "wait" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthBass>().pointerPos = "pos" + chuckCounter.ToString();
+            currentMeshChild.GetComponent<ChuckSynthBass>().createPointer = "createPointer" + chuckCounter.ToString();
+        }
+        else if (paintColour.name == "Yellow Paint"){
+            GameObject currentMeshChild = currentMesh.transform.GetChild(0).gameObject;
             currentMeshChild.AddComponent<ChuckSynthBrass>();
             currentMeshChild.GetComponent<ChuckSynthBrass>().freqArrayName = "freqs" + chuckCounter.ToString();
             currentMeshChild.GetComponent<ChuckSynthBrass>().timeArray = "times" + chuckCounter.ToString();
