@@ -18,7 +18,7 @@ public class Painter : MonoBehaviour
     List<Vertex> mostRecentVertices = new List<Vertex>();
     int numRecentVertices;
     Vector3 lastPoint;
-    public GameObject controller;
+    public GameObject lController;
     public GameObject rController;
     int chuckCounter = 1;
     public GameObject meshHolder;
@@ -31,7 +31,7 @@ public class Painter : MonoBehaviour
     public Root currentScale = Root.CMajor;
 
     void CreatePoint(){
-        Vector3 point = controller.transform.position;
+        Vector3 point = rController.transform.position;
         //To stop too many vertices spawning in the same place
         if ((lastPoint - point).magnitude > 0.001f){
             mostRecentVertices.Add(new Vertex(point));
@@ -194,10 +194,10 @@ public class Painter : MonoBehaviour
 
     void Update()
     {
-        Vector3 point = controller.transform.position;
+        Vector3 point = rController.transform.position;
         
         //Create a new sub chuck to hold the new mesh
-        if (controller.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
+        if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
             currentMesh = Instantiate(meshHolder,point,Quaternion.identity);
             currentMesh.GetComponent<MeshHolder>().paintColour = paintColour;
             currentMesh.transform.parent = chuckSubParent.transform;
@@ -207,21 +207,21 @@ public class Painter : MonoBehaviour
         }
 
         //Create a central that will get turned into a note, point is also given to new sub chuck to create shape around for mesh vertices
-        if (controller.GetComponent<ActionBasedController>().activateAction.action.ReadValue<float>() > 0.8){
+        if (rController.GetComponent<ActionBasedController>().activateAction.action.ReadValue<float>() > 0.8){
             CreatePoint();
             currentMesh.GetComponent<MeshHolder>().CalculateVertexDirection();
             currentMesh.GetComponent<MeshHolder>().DrawTriangles();
         }
 
         //Clear variables and give notes to chuck
-        else if(controller.GetComponent<ActionBasedController>().activateAction.action.WasReleasedThisFrame()){
+        else if(rController.GetComponent<ActionBasedController>().activateAction.action.WasReleasedThisFrame()){
             numRecentVertices = 0;
             GiveNotesToChuck();
             mostRecentVertices.Clear();
             currentMesh = null;
         }
 
-        if (rController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
+        if (lController.GetComponent<ActionBasedController>().activateAction.action.WasPressedThisFrame()){
             chuckSubParent.BroadcastMessage("PlayChuck");
         }
         lastPoint = point;

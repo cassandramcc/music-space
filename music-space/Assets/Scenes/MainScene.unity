@@ -3873,7 +3873,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 709c4bbac2fd2b64b965cf7ff80097f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 673575742}
+  lController: {fileID: 673575742}
   rController: {fileID: 701219716}
   meshHolder: {fileID: 7720038260125968871, guid: b009a0615c15b7445ac29cbad10e6501,
     type: 3}
